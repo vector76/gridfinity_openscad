@@ -17,6 +17,7 @@ module basic_cavity(num_x=2, num_y=1, num_z=2) {
   q = 1.65;
   q2 = 2.15;
   zpoint = 7*num_z-1.2;
+  facets = 13;
   
   difference() {
     union() {
@@ -39,8 +40,8 @@ module basic_cavity(num_x=2, num_y=1, num_z=2) {
     pivot_y = -12+2;
     
     // rounded inside bottom
-    for (a=[0, 15, 30, 45, 60, 75, 90]) translate([0, pivot_y, pivot_z])
-      rotate([a, 0, 0]) translate([0, -pivot_y, -pivot_z])
+    for (ai=[0:facets-1]) translate([0, pivot_y, pivot_z])
+      rotate([90*ai/(facets-1), 0, 0]) translate([0, -pivot_y, -pivot_z])
       translate([-21, -50-17-1.15, 0]) cube([42*num_x, 50, 7*num_z]);
   }
 }
