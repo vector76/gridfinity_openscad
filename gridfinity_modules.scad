@@ -60,7 +60,7 @@ module pad_oversize(num_x=1, num_y=1, margins=0) {
   bevel1_top = 0.8;     // z of top of bottom-most bevel (bottom of bevel is at z=0)
   bevel2_bottom = 2.6;  // z of bottom of second bevel
   bevel2_top = 5;       // z of top of second bevel
-  totalht = bevel2_top + 0.1;  // top of pad is barely above the second bevel
+  bonus_ht = 0.2;       // extra height (and radius) on second bevel
   
   // female parts are a bit oversize for a nicer fit
   radialgap = margins ? 0.25 : 0;  // oversize cylinders for a bit of clearance
@@ -75,10 +75,15 @@ module pad_oversize(num_x=1, num_y=1, margins=0) {
       }
       
       hull() cornercopy(pad_corner_position, num_x, num_y) {
-        translate([0, 0, bevel2_bottom]) cylinder(d=3.2+2*radialgap, h=0.1, $fn=32);
-        translate([0, 0, bevel2_top]) 
-        cylinder(d=7.5+0.5+2*radialgap, h=totalht-bevel2_top+axialdown, $fn=44);
+        translate([0, 0, bevel2_bottom]) 
+        cylinder(d1=3.2+2*radialgap, d2=7.5+0.5+2*radialgap+2*bonus_ht, h=bevel2_top-bevel2_bottom+bonus_ht, $fn=32);
       }
+    }
+    
+    // cut off bottom if we're going to go negative
+    if (margins) {
+      translate([-gridfinity_pitch/2, -gridfinity_pitch/2, 0])
+      cube([gridfinity_pitch, gridfinity_pitch, axialdown]);
     }
   }
 }
