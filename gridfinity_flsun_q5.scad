@@ -1,16 +1,6 @@
 // include instead of use, so we get the pitch
 include <gridfinity_modules.scad>
-
-module frame_plain(num_x, num_y, extra_down=0) {
-  ht = extra_down > 0 ? 4.4 : 5;
-  corner_radius = 3.75;
-  corner_position = gridfinity_pitch/2-corner_radius;
-  difference() {
-    hull() cornercopy(corner_position, num_x, num_y) 
-    translate([0, 0, -extra_down]) cylinder(r=corner_radius, h=ht+extra_down);
-    translate([0, 0, -0.01]) render() gridcopy(num_x, num_y) pad_oversize(margins=1);
-  }
-}
+use <gridfinity_baseplate.scad>   // for frame_plain
 
 translate([gridfinity_pitch/2, gridfinity_pitch/2, 0]) frame_plain(4, 1);
 ear_hole_x = 182.5; // distance between existing screw holes on FLSUN q5.
