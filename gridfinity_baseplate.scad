@@ -1,19 +1,9 @@
 // include instead of use, so we get the pitch
 include <gridfinity_modules.scad>
 
-if (0) {
-  %translate([-21, -21, 0])
-  import("../_proj/3rd_party/gridfinity-baseplates-model_files/frame-3x5.stl");
-  
-  frame_plain(5, 3);
-}
+//frame_plain(5, 3);
+weighted_baseplate(5, 3);
 
-if (1) {
-  %translate([-21, -21, 0])
-  import("../_proj/3rd_party/gridfinity-baseplates-model_files/weighted-baseplate-3x5.stl");
-  
-  weighted_baseplate(5, 3);
-}
 
 module weighted_baseplate(num_x, num_y) {
   magnet_position = 13;
@@ -52,7 +42,6 @@ module frame_plain(num_x, num_y, extra_down=0) {
   difference() {
     hull() cornercopy(corner_position, num_x, num_y) 
     translate([0, 0, -extra_down]) cylinder(r=corner_radius, h=ht+extra_down);
-    
-    render() gridcopy(num_x, num_y) pad_oversize(margins=1);
+    translate([0, 0, -0.01]) render() gridcopy(num_x, num_y) pad_oversize(margins=1);
   }
 }
