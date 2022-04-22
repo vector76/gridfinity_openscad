@@ -1,13 +1,42 @@
-use <gridfinity_modules.scad>
+include <gridfinity_modules.scad>
 
-render()
-basic_cup(2, 1, 3);
+part = 2;
+
+if (part == 1) {
+  basic_cup(2, 1, 2);
+}
+
+if (part == 2) {
+  basic_cup(2, 1, 2, chambers=5);
+}
 
 
-module basic_cup(num_x=1, num_y=1, num_z=2, bottom_holes=0) {
+module basic_cup(num_x=1, num_y=1, num_z=2, bottom_holes=0, chambers=1) {
   difference() {
     grid_block(num_x, num_y, num_z, bottom_holes ? 5 : 0);
-    basic_cavity(num_x, num_y, num_z);
+    partitioned_cavity(num_x, num_y, num_z, chambers);
+  }
+}
+
+
+module partitioned_cavity(num_x=2, num_y=1, num_z=2, chambers=3) {
+  // cavity with removed segments so that we leave dividing walls behind
+  gp = gridfinity_pitch;
+  outer_wall_th = 1.2;  // cavity is this far away from the 42mm 'ideal' block
+  inner_wall_th =1.2;
+  
+  cavity_xsize = gp*num_x-2*outer_wall_th;
+  chamber_pitch = (cavity_xsize+inner_wall_th)/chambers;  // period of repeating walls
+
+  difference() {
+    basic_cavity(2, 1, 2);
+    
+    if (chambers >= 2) {
+      for (i=[1:chambers-1]) {
+        translate([-gp/2+outer_wall_th-inner_wall_th+i*chamber_pitch, -gp/2, 0])
+        cube([inner_wall_th, gp*num_y, gridfinity_zpitch*(num_z+1)]);
+      }
+    }
   }
 }
 
@@ -42,6 +71,7 @@ module basic_cavity(num_x=2, num_y=1, num_z=2) {
     // rounded inside bottom
     for (ai=[0:facets-1]) translate([0, pivot_y, pivot_z])
       rotate([90*ai/(facets-1), 0, 0]) translate([0, -pivot_y, -pivot_z])
-      translate([-21, -50-17-1.15, 0]) cube([42*num_x, 50, 7*num_z]);
+      translate([-gridfinity_pitch/2, -10-17-1.15, 0]) 
+      cube([gridfinity_pitch*num_x, 10, gridfinity_zpitch*num_z+5]);
   }
 }

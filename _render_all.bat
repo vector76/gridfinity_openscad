@@ -1,8 +1,11 @@
 @set OPENSCAD="C:\Program Files\OpenSCAD\openscad.exe"
 @set PYTHON="C:\Users\Vector\Anaconda3\python.exe"
 
-%OPENSCAD% gridfinity_basic_cup.scad -o basic_cup_2x1x3.stl --export-format binstl
+%OPENSCAD% gridfinity_basic_cup.scad -D part=1 -o basic_cup_2x1x3.stl --export-format binstl
 %PYTHON% canonicalize.py basic_cup_2x1x3.stl
+
+%OPENSCAD% gridfinity_basic_cup.scad -D part=2 -o divided_cup_2x1x3x5.stl --export-format binstl
+%PYTHON% canonicalize.py divided_cup_2x1x3x5.stl
 
 %OPENSCAD% gridfinity_baseplate.scad -D part=1 -o frame_plain.stl --export-format binstl
 %PYTHON% canonicalize.py frame_plain.stl

@@ -84,7 +84,7 @@ module pad_oversize(num_x=1, num_y=1, margins=0) {
     // cut off bottom if we're going to go negative
     if (margins) {
       translate([-gridfinity_pitch/2, -gridfinity_pitch/2, 0])
-      cube([gridfinity_pitch, gridfinity_pitch, axialdown]);
+      cube([gridfinity_pitch*num_x, gridfinity_pitch*num_y, axialdown]);
     }
   }
 }
