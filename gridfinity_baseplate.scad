@@ -1,8 +1,15 @@
 // include instead of use, so we get the pitch
 include <gridfinity_modules.scad>
 
-//frame_plain(5, 3);
-weighted_baseplate(5, 3);
+part = 1;
+
+if (part == 1) {
+  frame_plain(5, 3);
+}
+
+if (part == 2) {
+  weighted_baseplate(5, 3);
+}
 
 
 module weighted_baseplate(num_x, num_y) {
