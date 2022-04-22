@@ -7,6 +7,9 @@
 %OPENSCAD% gridfinity_basic_cup.scad -D part=2 -o divided_cup_2x1x2x5.stl --export-format binstl
 %PYTHON% canonicalize.py divided_cup_2x1x2x5.stl
 
+%OPENSCAD% gridfinity_basic_cup.scad -D part=3 -o divided_cup_2x1x3x5.stl --export-format binstl
+%PYTHON% canonicalize.py divided_cup_2x1x3x5.stl
+
 %OPENSCAD% gridfinity_baseplate.scad -D part=1 -o frame_plain.stl --export-format binstl
 %PYTHON% canonicalize.py frame_plain.stl
 
