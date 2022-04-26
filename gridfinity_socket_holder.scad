@@ -1,6 +1,6 @@
 include <gridfinity_modules.scad>
 
-part = 3;
+part = 5;
 
 if (part == 1) {
 	socket_holder(4, [12,12,12,13,14,16,16,17,21,22], "METRIC", stackable=false);
@@ -9,17 +9,22 @@ if (part == 1) {
 } else if (part == 3) {
 	socket_holder(4, [12,12,12,12,12,12,13,14,14,16,16], "Imperial < 1/2\"", stackable=true);
 } else if (part == 4) {
-	socket_holder(3, [17,18,20,22,24], "Imperial >= 1/2\"", stackable=true);
+	socket_holder(3, [17,18,20,22,24], "Imperial >= 1/2\"", stackable=false);
+} else if (part == 5) {
+	socket_holder(4, [12,12,12,13,14,16,16,17,21,22], "Metric >=7mm", stackable=true);
+} else if (part == 6) {
+	socket_holder(2, [12,12,12,12,12,12], "metric<7mm", stackable=false);
 }
 
+function inc(v, a=.6) = [for (i = v) i+a ];
 
 module socket_holder(num_x=1, widths=[], name="", stackable=false) {
 	difference(){
 		grid_block(num_x, 1, stackable ? 5 : 3);
 		usable_w = 42*num_x - 6;
-		rotate([-45,0,0])translate([-18,-5,0])
-			sockets(widths*1.01, usable_w);
-		rotate([-45,0,0])translate([-18,-23-6,4])
+		rotate([-45,0,0])translate([-18,-5,1])
+			sockets(inc(widths,0.6), usable_w);
+		rotate([-45,0,0])translate([-18,-23-6,5])
 			cube([usable_w,18,26]);
 		translate([-18,-20,10])rotate([90,0,0])
 			linear_extrude(10)text(name);
