@@ -5,10 +5,10 @@ part = 5;
 if (part == 1) {
   socket_holder(4, [12,12,12,13,14,16,16,17,21,22], "METRIC");
 }
-lse if (part == 2) {
+else if (part == 2) {
   socket_holder(4, [12,13,14,14,16,16,17,18,20,22], "IMPERIAL");
 }
-lse if (part == 3) {
+else if (part == 3) {
   socket_holder(4, [12,12,12,12,12,12,13,14,14,16,16], "Imperial < 1/2\"", num_z=5);
 }
 else if (part == 4) {
