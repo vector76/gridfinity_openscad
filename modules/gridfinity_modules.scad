@@ -2,7 +2,6 @@ gridfinity_pitch = 42;
 gridfinity_zpitch = 7;
 gridfinity_clearance = 0.5;  // each bin is undersize by this much
 
-
 // basic block with cutout in top to be stackable, optional holes in bottom
 // start with this and begin 'carving'
 module grid_block(num_x=1, num_y=1, num_z=2, bot_hole_depth=6, center=false) {
@@ -19,17 +18,20 @@ module grid_block(num_x=1, num_y=1, num_z=2, bot_hole_depth=6, center=false) {
         gridcopy(num_x, num_y) pad_oversize();
         // main body will be cut down afterward
         translate([-gridfinity_pitch/2, -gridfinity_pitch/2, 5]) 
-          cube([gridfinity_pitch*num_x, gridfinity_pitch*num_y, totalht-5]);
+        cube([gridfinity_pitch*num_x, gridfinity_pitch*num_y, totalht-5]);
       }
       
       // crop with outer cylinders
       translate([0, 0, -0.1])
-      hull() cornercopy(block_corner_position, num_x, num_y) 
-        cylinder(r=corner_radius, h=totalht+0.2, $fn=44);
+      hull() 
+      cornercopy(block_corner_position, num_x, num_y) 
+      cylinder(r=corner_radius, h=totalht+0.2, $fn=44);
     }
     
     // remove top so XxY can fit on top
-    translate([0, 0, gridfinity_zpitch*num_z]) pad_oversize(num_x, num_y, 1);
+      color("blue") 
+      translate([0, 0, gridfinity_zpitch*num_z]) 
+      pad_oversize(num_x, num_y, 1);
     
     // add holes in bottom pads if requested
     if (bot_hole_depth > 0) {
