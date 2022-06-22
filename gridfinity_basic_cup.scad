@@ -74,8 +74,8 @@ module basic_cavity(num_x=2, num_y=1, num_z=2) {
         // create bevels below the lip
         translate([0, 0, zpoint-0.1]) cylinder(d=2.3, h=0.1, $fn=24);
         translate([0, 0, zpoint-q-q2]) cylinder(d=2.3+2*q, h=q2, $fn=32);
-        // create rounded bottom of bowl (8.3 is high enough to not expose gaps)
-        translate([0, 0, 8.3]) sphere(d=2.3+2*q, $fn=32);
+        // create rounded bottom of bowl (8.5 is high enough to not expose gaps)
+        translate([0, 0, 8.5]) sphere(d=2.3+2*q, $fn=32);
       }
     }
     
