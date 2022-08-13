@@ -4,10 +4,12 @@ gridfinity_clearance = 0.5;  // each bin is undersize by this much
 
 // basic block with cutout in top to be stackable, optional holes in bottom
 // start with this and begin 'carving'
-module grid_block(num_x=1, num_y=1, num_z=2, bot_hole_depth=6, center=false) {
+module grid_block(num_x=1, num_y=1, num_z=2, screw_depth=6, magnet_diameter=6.5, center=false) {
   corner_radius = 3.75;
   outer_size = gridfinity_pitch - gridfinity_clearance;  // typically 41.5
   block_corner_position = outer_size/2 - corner_radius;  // need not match center of pad corners
+  magnet_thickness = 2.4;
+  magnet_position = 13;
   
   totalht=gridfinity_zpitch*num_z+3.75;
   translate( center ? [-(num_x-1)*gridfinity_pitch/2, -(num_y-1)*gridfinity_pitch/2, 0] : [0, 0, 0] )
@@ -33,24 +35,14 @@ module grid_block(num_x=1, num_y=1, num_z=2, bot_hole_depth=6, center=false) {
       translate([0, 0, gridfinity_zpitch*num_z]) 
       pad_oversize(num_x, num_y, 1);
     
-    // add holes in bottom pads if requested
-    if (bot_hole_depth > 0) {
-      gridcopy(num_x, num_y) bottomholes(bot_hole_depth);
+    if (screw_depth > 0) {  // add pockets for screws if requested
+      gridcopy(num_x, num_y) cornercopy(magnet_position)
+      translate([0, 0, -0.1]) cylinder(d=3, h=screw_depth+0.1, $fn=28);
     }
-  }
-}
-
-
-// holes in the bottom of the pads (slightly short to allow deeper
-module bottomholes(depth=6) {
-  magnet_position = 13;
-  magnet_od = 6.5;
-  magnet_thickness = 2.4;
-  eps = 0.1;  // differences are annoying with coincident faces
-  if (depth > 0) {
-    cornercopy(magnet_position) {
-      translate([0, 0, -eps]) cylinder(d=magnet_od, h=magnet_thickness+eps, $fn=41);
-      cylinder(d=3, h=depth, $fn=28);
+    
+    if (magnet_diameter > 0) {  // add pockets for magnets if requested
+      gridcopy(num_x, num_y) cornercopy(magnet_position)
+      translate([0, 0, -0.1]) cylinder(d=magnet_diameter, h=magnet_thickness+0.1, $fn=41);
     }
   }
 }

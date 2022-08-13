@@ -10,9 +10,9 @@ render()
 glue_stick_cup(blocks_needed, blocks_needed, cup_height);
 
 
-module glue_stick_cup(num_x=1, num_y=1, num_z=2, bottom_holes=0) {
+module glue_stick_cup(num_x=1, num_y=1, num_z=2) {
   difference() {
-    grid_block(num_x, num_y, num_z, bottom_holes ? 5 : 0, center=true);
+    grid_block(num_x, num_y, num_z, screw_depth=0, magnet_diameter=0, center=true);
     glue_stick(num_z, stick_diameter);
   }
 }

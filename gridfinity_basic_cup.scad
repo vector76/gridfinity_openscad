@@ -1,20 +1,31 @@
 include <modules/gridfinity_modules.scad>
 
+// X dimension in grid units
 length = 2;
-width = 3;
-// multiple of 7mm
-height = 7;// [2, 3, 4, 5, 6]
-numbchambers = 2;
+// Y dimension in grid units
+width = 1;
+// Z dimension (multiples of 7mm)
+height = 3;// [2, 3, 4, 5, 6, 7]
+// X dimension subdivisions
+chambers = 1;
+// Include overhang for labeling
 withLabel = false;
-fingerslide = false;
+// Include larger corner fillet
+fingerslide = true;
+// (Zack's design uses magnet diameter of 6.5)
+magnet_diameter = 0;  // .1
+// (Zack's design uses depth of 6)
+screw_depth = 0;
+// Minimum thickness above cutouts in base (Zack's design is effectively 1.2)
+floor_thickness = 0.7;
 
 
-basic_cup(length, width, height, chambers=numbchambers);
+basic_cup(length, width, height, chambers=chambers);
 
 
-module basic_cup(num_x=1, num_y=1, num_z=2, bottom_holes=0, chambers=1) {
+module basic_cup(num_x=1, num_y=1, num_z=2, chambers=1) {
   difference() {
-    grid_block(num_x, num_y, num_z, bottom_holes ? 5 : 0);
+    grid_block(num_x, num_y, num_z, magnet_diameter=magnet_diameter, screw_depth=screw_depth);
     color("red") partitioned_cavity(num_x, num_y, num_z, chambers);
   }
 }
@@ -62,6 +73,11 @@ module basic_cavity(num_x=2, num_y=1, num_z=2) {
   q2 = 2.15;
   zpoint = gridfinity_zpitch*num_z-1.2;
   facets = 13;
+  mag_ht = magnet_diameter > 0 ? 2.4: 0;
+  m3_ht = screw_depth;
+  part_ht = 5;  // height of partition between cells
+  
+  floorht = max(mag_ht, m3_ht, part_ht) + floor_thickness;
   
   difference() {
     union() {
@@ -75,12 +91,12 @@ module basic_cavity(num_x=2, num_y=1, num_z=2) {
         translate([0, 0, zpoint-0.1]) cylinder(d=2.3, h=0.1, $fn=24);
         translate([0, 0, zpoint-q-q2]) cylinder(d=2.3+2*q, h=q2, $fn=32);
         // create rounded bottom of bowl (8.5 is high enough to not expose gaps)
-        translate([0, 0, 8.5]) sphere(d=2.3+2*q, $fn=32);
+        translate([0, 0, 2.3/2+q+floorht]) sphere(d=2.3+2*q, $fn=32);
       }
     }
     
     // cut away from the negative to leave behind wall to make it easier to remove piece
-    pivot_z = 11.6+2;
+    pivot_z = 13.6-0.45+floorht-5;
     pivot_y = -12+2;
     
     // rounded inside bottom
