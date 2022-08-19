@@ -1,37 +1,60 @@
 include <modules/gridfinity_modules.scad>
 
 // X dimension in grid units
-length = 2;
+default_length = 2;
 // Y dimension in grid units
-width = 1;
+default_width = 1;
 // Z dimension (multiples of 7mm)
-height = 3;// [2, 3, 4, 5, 6, 7]
+default_height = 3;// [2, 3, 4, 5, 6, 7]
 // X dimension subdivisions
-chambers = 1;
+default_chambers = 1;
+
 // Include overhang for labeling
-withLabel = false;
+default_withLabel = false;
 // Include larger corner fillet
-fingerslide = true;
+default_fingerslide = true;
+
+// Set magnet diameter and depth to 0 to print without magnet holes
 // (Zack's design uses magnet diameter of 6.5)
-magnet_diameter = 0;  // .1
+default_magnet_diameter = 0;  // .1
 // (Zack's design uses depth of 6)
-screw_depth = 0;
+default_screw_depth = 0;
+
 // Minimum thickness above cutouts in base (Zack's design is effectively 1.2)
-floor_thickness = 0.7;
+default_floor_thickness = 0.7;
 
 
-basic_cup(length, width, height, chambers=chambers);
+basic_cup(
+  num_x=default_length,
+  num_y=default_width,
+  num_z=default_height,
+  chambers=default_chambers,
+  withLabel=default_withLabel,
+  magnet_diameter=default_magnet_diameter,
+  screw_depth=default_screw_depth,
+  floor_thickness=default_floor_thickness
+);
 
 
-module basic_cup(num_x=1, num_y=1, num_z=2, chambers=1) {
+module basic_cup(
+  num_x=2,
+  num_y=1,
+  num_z=2,
+  chambers=1,
+  withLabel=false,
+  fingerslide=true,
+  magnet_diameter=0,
+  screw_depth=0,
+  floor_thickness=0.7
+  ) {
   difference() {
-    grid_block(num_x, num_y, num_z, magnet_diameter=magnet_diameter, screw_depth=screw_depth);
-    color("red") partitioned_cavity(num_x, num_y, num_z, chambers);
+    grid_block(num_x, num_y, num_z, magnet_diameter, screw_depth);
+    color("red") partitioned_cavity(num_x, num_y, num_z, chambers, withLabel, fingerslide, magnet_diameter, screw_depth, floor_thickness);
   }
 }
 
 
-module partitioned_cavity(num_x=2, num_y=1, num_z=2, chambers=3) {
+module partitioned_cavity(num_x=2, num_y=1, num_z=2, chambers=2, withLabel=false, fingerslide=true, magnet_diameter=0, screw_depth=0, floor_thickness=0.7) {
   // cavity with removed segments so that we leave dividing walls behind
   gp = gridfinity_pitch;
   outer_wall_th = 1.8;  // cavity is this far away from the 42mm 'ideal' block
@@ -49,7 +72,7 @@ module partitioned_cavity(num_x=2, num_y=1, num_z=2, chambers=3) {
   chamber_pitch = (cavity_xsize+inner_wall_th)/chambers;  // period of repeating walls
 
   difference() {
-    basic_cavity(num_x, num_y, num_z);
+    basic_cavity(num_x, num_y, num_z, fingerslide, magnet_diameter, screw_depth, floor_thickness);
     
     if (chambers >= 2) {
       for (i=[1:chambers-1]) {
@@ -67,7 +90,7 @@ module partitioned_cavity(num_x=2, num_y=1, num_z=2, chambers=3) {
 }
 
 
-module basic_cavity(num_x=2, num_y=1, num_z=2) {
+module basic_cavity(num_x=2, num_y=1, num_z=2, fingerslide=true, magnet_diameter=0, screw_depth=0, floor_thickness=0.7) {
   eps = 0.1;
   q = 1.65;
   q2 = 2.15;
