@@ -4,6 +4,10 @@ include <gridfinity_modules.scad>
 default_chambers = 1;
 // Include overhang for labeling
 default_withLabel = false;
+// Width of the label in number of units
+// positive numbers are measured from the 0 end
+// negative numbers are measured from the far end
+default_labelWidth = "full";
 // Include larger corner fillet
 default_fingerslide = true;
 // Set magnet diameter and depth to 0 to print without magnet holes
@@ -21,6 +25,7 @@ basic_cup(
   num_z=3,
   chambers=default_chambers,
   withLabel=default_withLabel,
+  labelWidth=default_labelWidth,
   magnet_diameter=default_magnet_diameter,
   screw_depth=default_screw_depth,
   floor_thickness=default_floor_thickness
@@ -33,6 +38,7 @@ module basic_cup(
   num_z,
   chambers=default_chambers,
   withLabel=default_withLabel,
+  labelWidth=default_labelWidth,
   fingerslide=default_fingerslide,
   magnet_diameter=default_magnet_diameter,
   screw_depth=default_screw_depth,
@@ -40,12 +46,12 @@ module basic_cup(
   ) {
   difference() {
     grid_block(num_x, num_y, num_z, magnet_diameter, screw_depth);
-    color("red") partitioned_cavity(num_x, num_y, num_z, chambers, withLabel, fingerslide, magnet_diameter, screw_depth, floor_thickness);
+    color("red") partitioned_cavity(num_x, num_y, num_z, chambers, withLabel, labelWidth, fingerslide, magnet_diameter, screw_depth, floor_thickness);
   }
 }
 
 
-module partitioned_cavity(num_x, num_y, num_z, chambers=2, withLabel=default_withLabel, fingerslide=default_fingerslide, magnet_diameter=default_magnet_diameter, screw_depth=default_screw_depth, floor_thickness=default_floor_thickness) {
+module partitioned_cavity(num_x, num_y, num_z, chambers=2, withLabel=default_withLabel, labelWidth=default_labelWidth, fingerslide=default_fingerslide, magnet_diameter=default_magnet_diameter, screw_depth=default_screw_depth, floor_thickness=default_floor_thickness) {
   // cavity with removed segments so that we leave dividing walls behind
   gp = gridfinity_pitch;
   outer_wall_th = 1.8;  // cavity is this far away from the 42mm 'ideal' block
@@ -73,9 +79,11 @@ module partitioned_cavity(num_x, num_y, num_z, chambers=2, withLabel=default_wit
     }
     // this is the label
     if (withLabel) {
+      label_num_x = labelWidth == "full" ? num_x : labelWidth;
+      label_pos_x = label_num_x >= 0 ? 0 : num_x + label_num_x;
       hull() for (i=[0,1, 2])
-      translate([-gridfinity_pitch/2, yz[i][0], yz[i][1]])
-      rotate([0, 90, 0]) cylinder(d=bar_d, h=num_x*gridfinity_pitch, $fn=24);
+      translate([(-gridfinity_pitch/2) + (label_pos_x * gridfinity_pitch), yz[i][0], yz[i][1]])
+      #rotate([0, 90, 0]) cylinder(d=bar_d, h=abs(label_num_x)*gridfinity_pitch, $fn=24);
     }
   }
 }
