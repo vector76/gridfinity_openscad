@@ -30,6 +30,7 @@ basic_cup(
   num_z=height,
   chambers=chambers,
   withLabel=withLabel,
+  fingerslide=fingerslide,
   magnet_diameter=magnet_diameter,
   screw_depth=screw_depth,
   floor_thickness=floor_thickness
