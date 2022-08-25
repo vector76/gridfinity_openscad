@@ -32,6 +32,9 @@ basic_cup(
 );
 
 
+// It's recommended that all parameters other than x, y, z size should be specified by keyword 
+// and not by position.  The number of parameters makes positional parameters error prone, and
+// additional parameters may be added over time and break things.
 module basic_cup(
   num_x,
   num_y,
@@ -46,12 +49,17 @@ module basic_cup(
   ) {
   difference() {
     grid_block(num_x, num_y, num_z, magnet_diameter, screw_depth);
-    color("red") partitioned_cavity(num_x, num_y, num_z, chambers, withLabel, labelWidth, fingerslide, magnet_diameter, screw_depth, floor_thickness);
+    color("red") partitioned_cavity(num_x, num_y, num_z, chambers=chambers, withLabel=withLabel,
+    labelWidth=labelWidth, fingerslide=fingerslide, magnet_diameter=magnet_diameter, 
+    screw_depth=screw_depth, floor_thickness=floor_thickness);
   }
 }
 
 
-module partitioned_cavity(num_x, num_y, num_z, chambers=2, withLabel=default_withLabel, labelWidth=default_labelWidth, fingerslide=default_fingerslide, magnet_diameter=default_magnet_diameter, screw_depth=default_screw_depth, floor_thickness=default_floor_thickness) {
+module partitioned_cavity(num_x, num_y, num_z, chambers=default_chambers, withLabel=default_withLabel, 
+    labelWidth=default_labelWidth, fingerslide=default_fingerslide, 
+    magnet_diameter=default_magnet_diameter, screw_depth=default_screw_depth, 
+    floor_thickness=default_floor_thickness) {
   // cavity with removed segments so that we leave dividing walls behind
   gp = gridfinity_pitch;
   outer_wall_th = 1.8;  // cavity is this far away from the 42mm 'ideal' block
@@ -69,7 +77,8 @@ module partitioned_cavity(num_x, num_y, num_z, chambers=2, withLabel=default_wit
   chamber_pitch = (cavity_xsize+inner_wall_th)/chambers;  // period of repeating walls
 
   difference() {
-    basic_cavity(num_x, num_y, num_z, fingerslide, magnet_diameter, screw_depth, floor_thickness);
+    basic_cavity(num_x, num_y, num_z, fingerslide=fingerslide, magnet_diameter=magnet_diameter,
+    screw_depth=screw_depth, floor_thickness=floor_thickness);
     
     if (chambers >= 2) {
       for (i=[1:chambers-1]) {
@@ -89,7 +98,9 @@ module partitioned_cavity(num_x, num_y, num_z, chambers=2, withLabel=default_wit
 }
 
 
-module basic_cavity(num_x, num_y, num_z, fingerslide=default_fingerslide, magnet_diameter=default_magnet_diameter, screw_depth=default_screw_depth, floor_thickness=default_floor_thickness) {
+module basic_cavity(num_x, num_y, num_z, fingerslide=default_fingerslide, 
+    magnet_diameter=default_magnet_diameter, screw_depth=default_screw_depth, 
+    floor_thickness=default_floor_thickness) {
   eps = 0.1;
   q = 1.65;
   q2 = 2.15;

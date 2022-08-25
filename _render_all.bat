@@ -1,13 +1,13 @@
 @set OPENSCAD="C:\Program Files\OpenSCAD\openscad.exe"
 @set PYTHON="C:\Users\Vector\Anaconda3\python.exe"
 
-%OPENSCAD% gridfinity_basic_cup.scad -D length=2 -D width=1 -D height=2 -D chambers=1 -D fingerslide=true -o Renders/basic_cup_2x1x2.stl --export-format binstl
+%OPENSCAD% gridfinity_basic_cup.scad -D width=2 -D depth=1 -D height=2 -D chambers=1 -D fingerslide=true -o Renders/basic_cup_2x1x2.stl --export-format binstl
 %PYTHON% canonicalize.py Renders/basic_cup_2x1x2.stl
 
-%OPENSCAD% gridfinity_basic_cup.scad -D length=2 -D width=1 -D height=2 -D chambers=5 -D fingerslide=true -o Renders/divided_cup_2x1x2x5.stl --export-format binstl
+%OPENSCAD% gridfinity_basic_cup.scad -D width=2 -D depth=1 -D height=2 -D chambers=5 -D fingerslide=true -o Renders/divided_cup_2x1x2x5.stl --export-format binstl
 %PYTHON% canonicalize.py Renders/divided_cup_2x1x2x5.stl
 
-%OPENSCAD% gridfinity_basic_cup.scad -D length=2 -D width=1 -D height=3 -D chambers=5 -D fingerslide=true -D withLabel=true -o Renders/divided_cup_2x1x3x5.stl --export-format binstl
+%OPENSCAD% gridfinity_basic_cup.scad -D width=2 -D depth=1 -D height=3 -D chambers=5 -D fingerslide=true -D withLabel=true -o Renders/divided_cup_2x1x3x5.stl --export-format binstl
 %PYTHON% canonicalize.py Renders/divided_cup_2x1x3x5.stl
 
 %OPENSCAD% gridfinity_baseplate.scad -D part=1 -o Renders/baseplate.stl --export-format binstl
