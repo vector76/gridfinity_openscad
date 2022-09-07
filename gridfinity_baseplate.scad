@@ -1,14 +1,38 @@
 // include instead of use, so we get the pitch
 include <modules/gridfinity_modules.scad>
 
-part = 1;
+xsize = 5;
+ysize = 3;
+weighted = false;
+lid = false;
 
-if (part == 1) {
-  frame_plain(5, 3);
+if (lid) {
+  base_lid(xsize, ysize);
+}
+else if (weighted) {
+  weighted_baseplate(xsize, ysize);
+}
+else {
+  frame_plain(xsize, ysize);
 }
 
-if (part == 2) {
-  weighted_baseplate(5, 3);
+
+module base_lid(num_x, num_y) {
+  magnet_position = 13;
+  magnet_od = 6.5;
+  magnet_thickness = 2.4;
+  eps = 0.1;
+  
+  translate([0, 0, 7]) frame_plain(xsize, ysize, trim=0.25);
+  difference() {
+    grid_block(xsize, ysize, 1, magnet_diameter=0, screw_depth=0);
+    gridcopy(num_x, num_y) {
+      cornercopy(magnet_position) {
+        translate([0, 0, 7-magnet_thickness])
+        cylinder(d=magnet_od, h=magnet_thickness+eps, $fn=48);
+      }
+    }
+  }
 }
 
 
@@ -42,13 +66,14 @@ module weighted_baseplate(num_x, num_y) {
 }
 
 
-module frame_plain(num_x, num_y, extra_down=0) {
+module frame_plain(num_x, num_y, extra_down=0, trim=0) {
   ht = extra_down > 0 ? 4.4 : 5;
   corner_radius = 3.75;
-  corner_position = gridfinity_pitch/2-corner_radius;
+  corner_position = gridfinity_pitch/2-corner_radius-trim;
   difference() {
     hull() cornercopy(corner_position, num_x, num_y) 
-    translate([0, 0, -extra_down]) cylinder(r=corner_radius, h=ht+extra_down);
-    translate([0, 0, -0.01]) render() gridcopy(num_x, num_y) pad_oversize(margins=1);
+    translate([0, 0, -extra_down]) cylinder(r=corner_radius, h=ht+extra_down, $fn=44);
+    translate([0, 0, trim ? 0 : -0.01]) 
+    render() gridcopy(num_x, num_y) pad_oversize(margins=1);
   }
 }
