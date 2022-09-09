@@ -9,7 +9,7 @@ module grid_block(num_x=1, num_y=1, num_z=2, magnet_diameter=6.5, screw_depth=6,
   outer_size = gridfinity_pitch - gridfinity_clearance;  // typically 41.5
   block_corner_position = outer_size/2 - corner_radius;  // need not match center of pad corners
   magnet_thickness = 2.4;
-  magnet_position = 13;
+  magnet_position = magnet_diameter > 8 ? 17 - magnet_diameter / 2 : 13;
   
   totalht=gridfinity_zpitch*num_z+3.75;
   translate( center ? [-(num_x-1)*gridfinity_pitch/2, -(num_y-1)*gridfinity_pitch/2, 0] : [0, 0, 0] )
