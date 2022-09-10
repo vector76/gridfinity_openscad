@@ -11,7 +11,7 @@ height = 3;// [2, 3, 4, 5, 6, 7]
 chambers = 1;
 
 // Include overhang for labeling
-withLabel = true;
+withLabel = false;
 // Include larger corner fillet
 fingerslide = true;
 // Width of the label in number of units
