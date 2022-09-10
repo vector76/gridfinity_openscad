@@ -11,9 +11,13 @@ height = 3;// [2, 3, 4, 5, 6, 7]
 chambers = 1;
 
 // Include overhang for labeling
-withLabel = false;
+withLabel = true;
 // Include larger corner fillet
 fingerslide = true;
+// Width of the label in number of units
+// positive numbers are measured from the 0 end
+// negative numbers are measured from the far end
+labelWidth = -1;
 
 // Set magnet diameter and depth to 0 to print without magnet holes
 // (Zack's design uses magnet diameter of 6.5)
@@ -24,12 +28,15 @@ screw_depth = 0;
 floor_thickness = 0.7;
 
 
+
+
 basic_cup(
   num_x=width,
   num_y=depth,
   num_z=height,
   chambers=chambers,
   withLabel=withLabel,
+  labelWidth=labelWidth,
   fingerslide=fingerslide,
   magnet_diameter=magnet_diameter,
   screw_depth=screw_depth,
