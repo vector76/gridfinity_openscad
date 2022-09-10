@@ -14,6 +14,8 @@ chambers = 1;
 withLabel = false;
 // Include larger corner fillet
 fingerslide = true;
+// Width of the label in number of units: positive numbers are measured from the 0 end, negative numbers are measured from the far end
+labelWidth = -1;  // .1
 
 // Set magnet diameter and depth to 0 to print without magnet holes
 // (Zack's design uses magnet diameter of 6.5)
@@ -30,6 +32,7 @@ basic_cup(
   num_z=height,
   chambers=chambers,
   withLabel=withLabel,
+  labelWidth=labelWidth,
   fingerslide=fingerslide,
   magnet_diameter=magnet_diameter,
   screw_depth=screw_depth,
