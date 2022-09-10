@@ -116,15 +116,15 @@ module basic_cavity(num_x, num_y, num_z, fingerslide=default_fingerslide,
     union() {
       // cut downward from base
       hull() cornercopy(17, num_x, num_y) {
-        translate([0, 0, zpoint-eps]) cylinder(d=2.3, h=1.2+2*eps, $fn=24);
+        translate([0, 0, zpoint-eps]) cylinder(d=2.2, h=1.2+2*eps, $fn=24);
       }
       
       hull() cornercopy(17, num_x, num_y) {
         // create bevels below the lip
-        translate([0, 0, zpoint-0.1]) cylinder(d=2.3, h=0.1, $fn=24);
-        translate([0, 0, zpoint-q-q2]) cylinder(d=2.3+2*q, h=q2, $fn=32);
+        translate([0, 0, zpoint-0.1]) cylinder(d=2.2, h=0.1, $fn=24);
+        translate([0, 0, zpoint-q-q2]) cylinder(d=2.2+2*q, h=q2, $fn=32);
         // create rounded bottom of bowl (8.5 is high enough to not expose gaps)
-        translate([0, 0, 2.3/2+q+floorht]) sphere(d=2.3+2*q, $fn=32);
+        translate([0, 0, 2.3/2+q+floorht]) sphere(d=2.2+2*q, $fn=32);
       }
     }
     
@@ -134,10 +134,11 @@ module basic_cavity(num_x, num_y, num_z, fingerslide=default_fingerslide,
     
     // rounded inside bottom
     if(fingerslide){
-    for (ai=[0:facets-1]) translate([0, pivot_y, pivot_z])
-      rotate([90*ai/(facets-1), 0, 0]) translate([0, -pivot_y, -pivot_z])
-      translate([-gridfinity_pitch/2, -10-17-1.15, 0]) 
-      cube([gridfinity_pitch*num_x, 10, gridfinity_zpitch*num_z+5]);
+      for (ai=[0:facets-1]) translate([0, pivot_y, pivot_z])
+        rotate([90*ai/(facets-1), 0, 0])
+        translate([0, -pivot_y, -pivot_z])
+        translate([-gridfinity_pitch/2, -10-17-1.15, 0]) 
+        cube([gridfinity_pitch*num_x, 10, gridfinity_zpitch*num_z+5]);
     }
   }
 }
