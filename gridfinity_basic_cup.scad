@@ -14,10 +14,8 @@ chambers = 1;
 withLabel = false;
 // Include larger corner fillet
 fingerslide = true;
-// Width of the label in number of units
-// positive numbers are measured from the 0 end
-// negative numbers are measured from the far end
-labelWidth = -1;
+// Width of the label in number of units: positive numbers are measured from the 0 end, negative numbers are measured from the far end
+labelWidth = -1;  // .1
 
 // Set magnet diameter and depth to 0 to print without magnet holes
 // (Zack's design uses magnet diameter of 6.5)
@@ -26,8 +24,6 @@ magnet_diameter = 0;  // .1
 screw_depth = 0;
 // Minimum thickness above cutouts in base (Zack's design is effectively 1.2)
 floor_thickness = 0.7;
-
-
 
 
 basic_cup(
