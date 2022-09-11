@@ -17,6 +17,8 @@ default_magnet_diameter = 6.5;  // .1
 default_screw_depth = 6;
 // Minimum thickness above cutouts in base (Zack's design is effectively 1.2)
 default_floor_thickness = 1.2;
+// Thickness of outer walls (Zack's design is 0.95 mm)
+default_wall_thickness = 0.95;
 
 
 basic_cup(
@@ -28,7 +30,8 @@ basic_cup(
   labelWidth=default_labelWidth,
   magnet_diameter=default_magnet_diameter,
   screw_depth=default_screw_depth,
-  floor_thickness=default_floor_thickness
+  floor_thickness=default_floor_thickness,
+  wall_thickness=default_wall_thickness
 );
 
 
@@ -45,13 +48,14 @@ module basic_cup(
   fingerslide=default_fingerslide,
   magnet_diameter=default_magnet_diameter,
   screw_depth=default_screw_depth,
-  floor_thickness=default_floor_thickness
+  floor_thickness=default_floor_thickness,
+  wall_thickness=default_wall_thickness
   ) {
   difference() {
     grid_block(num_x, num_y, num_z, magnet_diameter, screw_depth);
     color("red") partitioned_cavity(num_x, num_y, num_z, chambers=chambers, withLabel=withLabel,
     labelWidth=labelWidth, fingerslide=fingerslide, magnet_diameter=magnet_diameter, 
-    screw_depth=screw_depth, floor_thickness=floor_thickness);
+    screw_depth=screw_depth, floor_thickness=floor_thickness, wall_thickness=wall_thickness);
   }
 }
 
@@ -59,7 +63,7 @@ module basic_cup(
 module partitioned_cavity(num_x, num_y, num_z, chambers=default_chambers, withLabel=default_withLabel, 
     labelWidth=default_labelWidth, fingerslide=default_fingerslide, 
     magnet_diameter=default_magnet_diameter, screw_depth=default_screw_depth, 
-    floor_thickness=default_floor_thickness) {
+    floor_thickness=default_floor_thickness, wall_thickness=default_wall_thickness) {
   // cavity with removed segments so that we leave dividing walls behind
   gp = gridfinity_pitch;
   outer_wall_th = 1.8;  // cavity is this far away from the 42mm 'ideal' block
@@ -78,7 +82,7 @@ module partitioned_cavity(num_x, num_y, num_z, chambers=default_chambers, withLa
 
   difference() {
     basic_cavity(num_x, num_y, num_z, fingerslide=fingerslide, magnet_diameter=magnet_diameter,
-    screw_depth=screw_depth, floor_thickness=floor_thickness);
+    screw_depth=screw_depth, floor_thickness=floor_thickness, wall_thickness=wall_thickness);
     
     if (chambers >= 2) {
       for (i=[1:chambers-1]) {
@@ -100,9 +104,12 @@ module partitioned_cavity(num_x, num_y, num_z, chambers=default_chambers, withLa
 
 module basic_cavity(num_x, num_y, num_z, fingerslide=default_fingerslide, 
     magnet_diameter=default_magnet_diameter, screw_depth=default_screw_depth, 
-    floor_thickness=default_floor_thickness) {
+    floor_thickness=default_floor_thickness, wall_thickness=default_wall_thickness) {
   eps = 0.1;
-  q = 1.65;
+  // I couldn't think of a good name for this ('q') but effectively it's the
+  // size of the overhang that produces a wall thickness that's less than the lip
+  // arount the top inside edge.
+  q = 1.65-wall_thickness+0.95;  // default 1.65 corresponds to wall thickness of 0.95
   q2 = 2.15;
   zpoint = gridfinity_zpitch*num_z-1.2;
   facets = 13;
@@ -116,15 +123,15 @@ module basic_cavity(num_x, num_y, num_z, fingerslide=default_fingerslide,
     union() {
       // cut downward from base
       hull() cornercopy(17, num_x, num_y) {
-        translate([0, 0, zpoint-eps]) cylinder(d=2.3, h=1.2+2*eps, $fn=24);
+        translate([0, 0, zpoint-eps]) cylinder(d=2.3, h=1.2+2*eps, $fn=24); // lip
       }
       
       hull() cornercopy(17, num_x, num_y) {
         // create bevels below the lip
-        translate([0, 0, zpoint-0.1]) cylinder(d=2.3, h=0.1, $fn=24);
-        translate([0, 0, zpoint-q-q2]) cylinder(d=2.3+2*q, h=q2, $fn=32);
+        translate([0, 0, zpoint-0.1]) cylinder(d=2.3, h=0.1, $fn=24);       // transition from lip ...
+        translate([0, 0, zpoint-q-q2]) cylinder(d=2.3+2*q, h=q2, $fn=32);   // ... to top of thin wall ...
         // create rounded bottom of bowl (8.5 is high enough to not expose gaps)
-        translate([0, 0, 2.3/2+q+floorht]) sphere(d=2.3+2*q, $fn=32);
+        translate([0, 0, 2.3/2+q+floorht]) sphere(d=2.3+2*q, $fn=32);       // .. to bottom of thin wall and floor
       }
     }
     
@@ -134,10 +141,11 @@ module basic_cavity(num_x, num_y, num_z, fingerslide=default_fingerslide,
     
     // rounded inside bottom
     if(fingerslide){
-    for (ai=[0:facets-1]) translate([0, pivot_y, pivot_z])
-      rotate([90*ai/(facets-1), 0, 0]) translate([0, -pivot_y, -pivot_z])
-      translate([-gridfinity_pitch/2, -10-17-1.15, 0]) 
-      cube([gridfinity_pitch*num_x, 10, gridfinity_zpitch*num_z+5]);
+      for (ai=[0:facets-1]) translate([0, pivot_y, pivot_z])
+        rotate([90*ai/(facets-1), 0, 0])
+        translate([0, -pivot_y, -pivot_z])
+        translate([-gridfinity_pitch/2, -10-17-1.15, 0]) 
+        cube([gridfinity_pitch*num_x, 10, gridfinity_zpitch*num_z+5]);
     }
   }
 }

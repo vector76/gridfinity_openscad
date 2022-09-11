@@ -24,6 +24,8 @@ magnet_diameter = 0;  // .1
 screw_depth = 0;
 // Minimum thickness above cutouts in base (Zack's design is effectively 1.2)
 floor_thickness = 0.7;
+// Wall thickness (Zack's design is 0.95)
+wall_thickness = 0.95;  // .01
 
 
 basic_cup(
@@ -36,5 +38,6 @@ basic_cup(
   fingerslide=fingerslide,
   magnet_diameter=magnet_diameter,
   screw_depth=screw_depth,
-  floor_thickness=floor_thickness
+  floor_thickness=floor_thickness,
+  wall_thickness=wall_thickness
 );
