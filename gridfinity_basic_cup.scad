@@ -26,7 +26,10 @@ screw_depth = 0;
 floor_thickness = 0.7;
 // Wall thickness (Zack's design is 0.95)
 wall_thickness = 0.95;  // .01
-
+// Hole overhang remedy is active only when both screws and magnets are used (and option is selected)
+hole_overhang_remedy = true;
+// Efficient floor option saves material and time, but the floor is not smooth (only applies if no magnets, screws, or finger-slide used)
+efficient_floor = false;
 
 basic_cup(
   num_x=width,
@@ -39,5 +42,7 @@ basic_cup(
   magnet_diameter=magnet_diameter,
   screw_depth=screw_depth,
   floor_thickness=floor_thickness,
-  wall_thickness=wall_thickness
+  wall_thickness=wall_thickness,
+  hole_overhang_remedy=hole_overhang_remedy,
+  efficient_floor=efficient_floor
 );

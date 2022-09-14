@@ -4,12 +4,16 @@ gridfinity_clearance = 0.5;  // each bin is undersize by this much
 
 // basic block with cutout in top to be stackable, optional holes in bottom
 // start with this and begin 'carving'
-module grid_block(num_x=1, num_y=1, num_z=2, magnet_diameter=6.5, screw_depth=6, center=false) {
+module grid_block(num_x=1, num_y=1, num_z=2, magnet_diameter=6.5, screw_depth=6, center=false, hole_overhang_remedy=false) {
   corner_radius = 3.75;
   outer_size = gridfinity_pitch - gridfinity_clearance;  // typically 41.5
   block_corner_position = outer_size/2 - corner_radius;  // need not match center of pad corners
   magnet_thickness = 2.4;
   magnet_position = magnet_diameter > 8 ? 17 - magnet_diameter / 2 : 13;
+  screw_hole_diam = 3;
+  
+  overhang_fix = hole_overhang_remedy && magnet_diameter > 0 && screw_depth > 0;
+  overhang_fix_depth = 0.3;  // assume this is enough
   
   totalht=gridfinity_zpitch*num_z+3.75;
   translate( center ? [-(num_x-1)*gridfinity_pitch/2, -(num_y-1)*gridfinity_pitch/2, 0] : [0, 0, 0] )
@@ -37,12 +41,21 @@ module grid_block(num_x=1, num_y=1, num_z=2, magnet_diameter=6.5, screw_depth=6,
     
     if (screw_depth > 0) {  // add pockets for screws if requested
       gridcopy(num_x, num_y) cornercopy(magnet_position)
-      translate([0, 0, -0.1]) cylinder(d=3, h=screw_depth+0.1, $fn=28);
+      translate([0, 0, -0.1]) cylinder(d=screw_hole_diam, h=screw_depth+0.1, $fn=28);
     }
     
     if (magnet_diameter > 0) {  // add pockets for magnets if requested
       gridcopy(num_x, num_y) cornercopy(magnet_position)
       translate([0, 0, -0.1]) cylinder(d=magnet_diameter, h=magnet_thickness+0.1, $fn=41);
+    }
+    
+    if (overhang_fix) {  // people seem to really like this overhang fix
+      gridcopy(num_x, num_y) cornercopy(magnet_position)
+      translate([0, 0, magnet_thickness-0.1]) 
+      render() intersection() {  // for some reason OpenSCAD blows up if I don't render here
+        translate([-magnet_diameter/2, -screw_hole_diam/2, 0]) cube([magnet_diameter, screw_hole_diam, overhang_fix_depth+0.1]);
+        cylinder(d=magnet_diameter, h=1, $fn=41);
+      }
     }
   }
 }
