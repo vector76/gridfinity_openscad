@@ -13,6 +13,9 @@
 %OPENSCAD% gridfinity_basic_cup.scad -D width=2 -D depth=1 -D height=3 -D filled_in=true -o Renders/filled_block_2x1x3x5.stl --export-format binstl
 %PYTHON% canonicalize.py Renders/filled_block_2x1x3x5.stl
 
+%OPENSCAD% gridfinity_basic_cup.scad -D width=0.5 -D depth=2 -D height=4 -D fingerslide=true -D withLabel=true -o Renders/basic_cup_halfx2x4.stl --export-format binstl
+%PYTHON% canonicalize.py Renders/basic_cup_halfx2x4.stl
+
 %OPENSCAD% gridfinity_baseplate.scad -o Renders/baseplate.stl --export-format binstl
 %PYTHON% canonicalize.py Renders/baseplate.stl
 

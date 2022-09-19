@@ -21,7 +21,15 @@ module grid_block(num_x=1, num_y=1, num_z=2, magnet_diameter=6.5, screw_depth=6,
     intersection() {
       union() {
         // grid of pads
-        gridcopy(num_x, num_y) pad_oversize();
+        if (num_x < 1) {
+          gridcopy(1, num_y) intersection() {
+            pad_oversize();
+            translate([gridfinity_pitch*(-1+num_x), 0, 0]) pad_oversize();
+          }
+        }
+        else {
+          gridcopy(ceil(num_x), num_y) pad_oversize();
+        }
         // main body will be cut down afterward
         translate([-gridfinity_pitch/2, -gridfinity_pitch/2, 5]) 
         cube([gridfinity_pitch*num_x, gridfinity_pitch*num_y, totalht-5]);
@@ -31,7 +39,7 @@ module grid_block(num_x=1, num_y=1, num_z=2, magnet_diameter=6.5, screw_depth=6,
       translate([0, 0, -0.1])
       hull() 
       cornercopy(block_corner_position, num_x, num_y) 
-      cylinder(r=corner_radius, h=totalht+0.2, $fn=44);
+      cylinder(r=corner_radius, h=totalht+0.2, $fn=32);
     }
     
     // remove top so XxY can fit on top

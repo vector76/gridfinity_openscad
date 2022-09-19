@@ -107,7 +107,7 @@ module partitioned_cavity(num_x, num_y, num_z, chambers=default_chambers, withLa
       label_pos_x = label_num_x >= 0 ? 0 : num_x + label_num_x;
       hull() for (i=[0,1, 2])
       translate([(-gridfinity_pitch/2) + (label_pos_x * gridfinity_pitch), yz[i][0], yz[i][1]])
-      #rotate([0, 90, 0]) cylinder(d=bar_d, h=abs(label_num_x)*gridfinity_pitch, $fn=24);
+      rotate([0, 90, 0]) cylinder(d=bar_d, h=abs(label_num_x)*gridfinity_pitch, $fn=24);
     }
   }
 }
@@ -145,6 +145,7 @@ module basic_cavity(num_x, num_y, num_z, fingerslide=default_fingerslide,
         tz(zpoint-q-q2) cylinder(d=2.3+2*q, h=q2, $fn=32);   // ... to top of thin wall ...
         // create rounded bottom of bowl (8.5 is high enough to not expose gaps)
         tz(2.3/2+q+floorht) sphere(d=2.3+2*q, $fn=32);       // .. to bottom of thin wall and floor
+        tz(2.3/2+q+floorht) mirror([0, 0, 1]) cylinder(d1=2.3+2*q, d2=0, h=1.15+q, $fn=32);
       }
     }
     
@@ -162,14 +163,44 @@ module basic_cavity(num_x, num_y, num_z, fingerslide=default_fingerslide,
     }
   }
   
+  // cut away side lips if num_x is less than 1
+  if (num_x < 1) {
+    hull() for (x=[-21+1.5+0.25+wall_thickness, -21+num_x*42-1.5-0.25-wall_thickness])
+    for (y=[-10, (num_y-0.5)*42-17])
+    translate([x, y, (floorht+7*num_z)/2])
+    cylinder(d=3, h=7*num_z, $fn=24);
+  }
+  
   if (efloor) {
-    // establishes floor
-    gridcopy(num_x, num_y) hull() tz(floor_thickness) cornercopy(17.5-1) cylinder(r=1, h=5, $fn=32);
-    
-    // tapered top portion
-    gridcopy(num_x, num_y) hull() {
-      tz(3) cornercopy(17.5-1) cylinder(r=1, h=1, $fn=32);
-      tz(5) cornercopy(19.5-1.15-q) cylinder(r=1.15+q, h=4, $fn=32);
+    if (num_x < 1) {
+      gridcopy(1, num_y) {
+        tz(floor_thickness) intersection() {
+          hull() cornercopy(17.5-1) cylinder(r=1, h=5, $fn=32);
+          translate([gridfinity_pitch*(-1+num_x), 0, 0]) hull() cornercopy(17.5-1) cylinder(r=1, h=5, $fn=32);
+        }
+      
+        // tapered top portion
+        intersection() {
+          hull() {
+            tz(3) cornercopy(17.5-1) cylinder(r=1, h=1, $fn=32);
+            tz(5) cornercopy(19.5-1.15-q) cylinder(r=1.15+q, h=4, $fn=32);
+          }
+          translate([gridfinity_pitch*(-1+num_x), 0, 0]) hull() {
+            tz(3) cornercopy(17.5-1) cylinder(r=1, h=1, $fn=32);
+            tz(5) cornercopy(19.5-1.15-q) cylinder(r=1.15+q, h=4, $fn=32);
+          }
+        }
+      }
+    }
+    else {
+      // establishes floor
+      gridcopy(num_x, num_y) hull() tz(floor_thickness) cornercopy(17.5-1) cylinder(r=1, h=5, $fn=32);
+      
+      // tapered top portion
+      gridcopy(num_x, num_y) hull() {
+        tz(3) cornercopy(17.5-1) cylinder(r=1, h=1, $fn=32);
+        tz(5) cornercopy(19.5-1.15-q) cylinder(r=1.15+q, h=4, $fn=32);
+      }
     }
   }
 }
