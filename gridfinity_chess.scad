@@ -67,10 +67,14 @@ module queen() {
   difference() {  
     rotate_extrude($fn=60)
     polygon([[0, 45], [0, 0], [11, 0], [11, 10], [8, 13], [6, 42], 
-      [8, 44], [8, 46], [10, 48], [10, 53], [8, 53], [6, 48]]);
+      [8, 44], [8, 46], [11, 48], [13, 53], [12, 53], [8, 48]]);
     
-    for (a=[0, 60, 120]) rotate([0, 0, a])
+    *%for (a=[0, 60, 120]) rotate([0, 0, a])
     translate([-15, -1.5, 48.5]) cube([30, 3, 10]);
+    
+    for (a=[0, 30, 60, 90, 120, 150]) rotate([0, 0, a])
+    translate([0, 0, 48.5+6])
+    rotate([0, 90, 0]) cylinder(d=7.25, h=30, $fn=30, center=true);
   }
 }
 
@@ -87,6 +91,12 @@ module knight() {
   }
   translate([-2.5-.125, -7.5, 30]) cube([5+.25, 17, 7]);
   
+  // support for bridging knight nose (remove afterward)
+  hull() {
+    translate([-2.625, 9.5-0.8, 27]) cube([5.25, 0.8, 3]);  
+    translate([-5, 10, 0]) cube([10, 1, 1]);
+  }
+  translate([-0.6, 10, 0]) cube([1.2, 6, 5]);
 }
 
 
