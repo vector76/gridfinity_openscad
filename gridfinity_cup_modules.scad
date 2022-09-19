@@ -103,7 +103,7 @@ module partitioned_cavity(num_x, num_y, num_z, chambers=default_chambers, withLa
     }
     // this is the label
     if (withLabel) {
-      label_num_x = labelWidth == "full" ? num_x : labelWidth;
+      label_num_x = (labelWidth == "full" || labelWidth == 0) ? num_x : labelWidth;
       label_pos_x = label_num_x >= 0 ? 0 : num_x + label_num_x;
       hull() for (i=[0,1, 2])
       translate([(-gridfinity_pitch/2) + (label_pos_x * gridfinity_pitch), yz[i][0], yz[i][1]])

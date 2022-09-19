@@ -1,5 +1,5 @@
-// include <modules/gridfinity_modules.scad>
-use <modules/gridfinity_cup_modules.scad>
+// include <gridfinity_modules.scad>
+use <gridfinity_cup_modules.scad>
 
 // X dimension in grid units
 width = 2;
@@ -14,8 +14,8 @@ chambers = 1;
 withLabel = false;
 // Include larger corner fillet
 fingerslide = true;
-// Width of the label in number of units: positive numbers are measured from the 0 end, negative numbers are measured from the far end
-labelWidth = -1;  // .1
+// Width of the label in number of units: positive numbers are measured from the 0 end, negative numbers are measured from the far end, value of zero means full width (as long as withLabel is true)
+labelWidth = 0;  // .1
 
 // Set magnet diameter and depth to 0 to print without magnet holes
 // (Zack's design uses magnet diameter of 6.5)
