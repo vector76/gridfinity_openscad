@@ -59,21 +59,51 @@ module basic_cup(
   hole_overhang_remedy=default_hole_overhang_remedy,
   efficient_floor=default_efficient_floor
   ) {
+  num_separators = chambers-1;
+  sep_pitch = num_x/(num_separators+1);
+  separator_positions = num_separators < 1 ? [] : [ for (i=[1:num_separators]) i*sep_pitch ];
+  
   difference() {
     grid_block(num_x, num_y, num_z, magnet_diameter, screw_depth, hole_overhang_remedy=hole_overhang_remedy);
-    color("red") partitioned_cavity(num_x, num_y, num_z, chambers=chambers, withLabel=withLabel,
+    color("red") partitioned_cavity(num_x, num_y, num_z, withLabel=withLabel,
     labelWidth=labelWidth, fingerslide=fingerslide, magnet_diameter=magnet_diameter, 
     screw_depth=screw_depth, floor_thickness=floor_thickness, wall_thickness=wall_thickness,
-    efficient_floor=efficient_floor);
+    efficient_floor=efficient_floor, separator_positions=separator_positions);
   }
 }
 
 
-module partitioned_cavity(num_x, num_y, num_z, chambers=default_chambers, withLabel=default_withLabel, 
+// separator positions are defined in units from the left side
+module irregular_cup(
+  num_x,
+  num_y,
+  num_z,
+  withLabel=default_withLabel,
+  labelWidth=default_labelWidth,
+  fingerslide=default_fingerslide,
+  magnet_diameter=default_magnet_diameter,
+  screw_depth=default_screw_depth,
+  floor_thickness=default_floor_thickness,
+  wall_thickness=default_wall_thickness,
+  hole_overhang_remedy=default_hole_overhang_remedy,
+  efficient_floor=default_efficient_floor,
+  separator_positions=[]
+  ) {
+  difference() {
+    grid_block(num_x, num_y, num_z, magnet_diameter, screw_depth, hole_overhang_remedy=hole_overhang_remedy);
+    color("red") partitioned_cavity(num_x, num_y, num_z, withLabel=withLabel,
+    labelWidth=labelWidth, fingerslide=fingerslide, magnet_diameter=magnet_diameter, 
+    screw_depth=screw_depth, floor_thickness=floor_thickness, wall_thickness=wall_thickness,
+    efficient_floor=efficient_floor, separator_positions=separator_positions);
+  }
+}
+
+
+module partitioned_cavity(num_x, num_y, num_z, withLabel=default_withLabel, 
     labelWidth=default_labelWidth, fingerslide=default_fingerslide, 
     magnet_diameter=default_magnet_diameter, screw_depth=default_screw_depth, 
     floor_thickness=default_floor_thickness, wall_thickness=default_wall_thickness,
-    efficient_floor=default_efficient_floor) {
+    efficient_floor=default_efficient_floor, separator_positions=[]) {
   // cavity with removed segments so that we leave dividing walls behind
   gp = gridfinity_pitch;
   outer_wall_th = 1.8;  // cavity is this far away from the 42mm 'ideal' block
@@ -88,17 +118,15 @@ module partitioned_cavity(num_x, num_y, num_z, chambers=default_chambers, withLa
   ];
   
   cavity_xsize = gp*num_x-2*outer_wall_th;
-  chamber_pitch = (cavity_xsize+inner_wall_th)/chambers;  // period of repeating walls
 
   difference() {
     basic_cavity(num_x, num_y, num_z, fingerslide=fingerslide, magnet_diameter=magnet_diameter,
     screw_depth=screw_depth, floor_thickness=floor_thickness, wall_thickness=wall_thickness,
     efficient_floor=efficient_floor);
     
-    if (chambers >= 2) {
-      for (i=[1:chambers-1]) {
-        translate([-gp/2+outer_wall_th-inner_wall_th+i*chamber_pitch, -gp/2, 0])
-        cube([inner_wall_th, gp*num_y, gridfinity_zpitch*(num_z+1)]);
+    if (len(separator_positions) > 0) {
+      for (i=[0:len(separator_positions)-1]) {
+        translate([gp*(-0.5+separator_positions[i])-inner_wall_th/2, -gp/2, 0]) cube([inner_wall_th, gp*num_y, gridfinity_zpitch*(num_z+1)]);
       }
     }
     // this is the label

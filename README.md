@@ -10,7 +10,8 @@ Options for bins:
 * Magnet pockets are optional, or alternative diameters can be specified
 * User-selectable wall thickness and floor thickness
 * Generate a filled-in block as a starting point for generating other models (similar in spirit to [this](https://www.printables.com/model/210548-filled-in-gridfinity-boxes-for-customization))
-* Any number of subdivisions along X axis (only X subdivisions and only evenly spaced divisions are implemented)
+* Any number of subdivisions along X axis (only X subdivisions are implemented)
+* Irregular subdivisions along X axis (only X subdivisions are implemented)
 * Finger-slide for removing small parts, available as an option
 * Label feature available as an option
 * Label feature can cover entire X length or only part
@@ -32,6 +33,7 @@ Some other models are also included and are also parametric.  Not all of these w
 
 [<img src="./Images/basic_cup_2x1x3.png">]()
 [<img src="./Images/divided_cup_2x1x3x5.png">]()
+[<img src="./Images/irregular_cup_2x1x3.png">]()
 [<img src="./Images/efficient_floor.png">]()
 [<img src="./Images/basic_cup_halfx2x4.png">]()
 [<img src="./Images/overhang_remedy.png">]()
