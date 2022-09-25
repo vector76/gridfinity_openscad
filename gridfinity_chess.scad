@@ -1,4 +1,4 @@
-include <modules/gridfinity_modules.scad>
+include <gridfinity_modules.scad>
 
 // Select model
 part = "tile";  // [ board, tile, pawn, knight, bishop, rook, queen, king ]
