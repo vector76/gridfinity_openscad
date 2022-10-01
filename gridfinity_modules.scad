@@ -4,15 +4,21 @@ gridfinity_clearance = 0.5;  // each bin is undersize by this much
 
 // basic block with cutout in top to be stackable, optional holes in bottom
 // start with this and begin 'carving'
-module grid_block(num_x=1, num_y=1, num_z=2, magnet_diameter=6.5, screw_depth=6, center=false, hole_overhang_remedy=false) {
+module grid_block(num_x=1, num_y=1, num_z=2, magnet_diameter=6.5, screw_depth=6, center=false, hole_overhang_remedy=false, half_pitch=false) {
   corner_radius = 3.75;
   outer_size = gridfinity_pitch - gridfinity_clearance;  // typically 41.5
   block_corner_position = outer_size/2 - corner_radius;  // need not match center of pad corners
   magnet_thickness = 2.4;
   magnet_position = magnet_diameter > 8 ? 17 - magnet_diameter / 2 : 13;
   screw_hole_diam = 3;
+  gp = gridfinity_pitch;
   
-  overhang_fix = hole_overhang_remedy && magnet_diameter > 0 && screw_depth > 0;
+  suppress_holes = num_x < 1 || num_y < 1;
+  
+  emd = suppress_holes ? 0 : magnet_diameter; // effective magnet diameter after override
+  esd = suppress_holes ? 0 : screw_depth;     // effective screw depth after override
+  
+  overhang_fix = hole_overhang_remedy && emd > 0 && esd > 0;
   overhang_fix_depth = 0.3;  // assume this is enough
   
   totalht=gridfinity_zpitch*num_z+3.75;
@@ -20,16 +26,8 @@ module grid_block(num_x=1, num_y=1, num_z=2, magnet_diameter=6.5, screw_depth=6,
   difference() {
     intersection() {
       union() {
-        // grid of pads
-        if (num_x < 1) {
-          gridcopy(1, num_y) intersection() {
-            pad_oversize();
-            translate([gridfinity_pitch*(-1+num_x), 0, 0]) pad_oversize();
-          }
-        }
-        else {
-          gridcopy(ceil(num_x), num_y) pad_oversize();
-        }
+        // logic for constructing odd-size grids of possibly half-pitch pads
+        pad_grid(num_x, num_y, half_pitch);
         // main body will be cut down afterward
         translate([-gridfinity_pitch/2, -gridfinity_pitch/2, 5]) 
         cube([gridfinity_pitch*num_x, gridfinity_pitch*num_y, totalht-5]);
@@ -47,24 +45,74 @@ module grid_block(num_x=1, num_y=1, num_z=2, magnet_diameter=6.5, screw_depth=6,
       translate([0, 0, gridfinity_zpitch*num_z]) 
       pad_oversize(num_x, num_y, 1);
     
-    if (screw_depth > 0) {  // add pockets for screws if requested
-      gridcopy(num_x, num_y) cornercopy(magnet_position)
-      translate([0, 0, -0.1]) cylinder(d=screw_hole_diam, h=screw_depth+0.1, $fn=28);
+    if (esd > 0) {  // add pockets for screws if requested
+      gridcopy(ceil(num_x), ceil(num_y)) cornercopy(magnet_position)
+      translate([0, 0, -0.1]) cylinder(d=screw_hole_diam, h=esd+0.1, $fn=28);
     }
     
-    if (magnet_diameter > 0) {  // add pockets for magnets if requested
-      gridcopy(num_x, num_y) cornercopy(magnet_position)
-      translate([0, 0, -0.1]) cylinder(d=magnet_diameter, h=magnet_thickness+0.1, $fn=41);
+    if (emd > 0) {  // add pockets for magnets if requested
+      gridcopy(ceil(num_x), ceil(num_y)) cornercopy(magnet_position)
+      translate([0, 0, -0.1]) cylinder(d=emd, h=magnet_thickness+0.1, $fn=41);
     }
     
     if (overhang_fix) {  // people seem to really like this overhang fix
-      gridcopy(num_x, num_y) cornercopy(magnet_position)
+      gridcopy(ceil(num_x), ceil(num_y)) cornercopy(magnet_position)
       translate([0, 0, magnet_thickness-0.1]) 
       render() intersection() {  // for some reason OpenSCAD blows up if I don't render here
-        translate([-magnet_diameter/2, -screw_hole_diam/2, 0]) cube([magnet_diameter, screw_hole_diam, overhang_fix_depth+0.1]);
-        cylinder(d=magnet_diameter, h=1, $fn=41);
+        translate([-emd/2, -screw_hole_diam/2, 0]) cube([emd, screw_hole_diam, overhang_fix_depth+0.1]);
+        cylinder(d=emd, h=1, $fn=41);
       }
     }
+  }
+}
+
+
+module pad_grid(num_x, num_y, half_pitch=false) {
+  // if num_x (or num_y) is less than 1 (or less than 0.5 if half_pitch is enabled) then round over the far side
+  cut_far_x = (num_x < 1 && !half_pitch) || (num_x < 0.5);
+  cut_far_y = (num_y < 1 && !half_pitch) || (num_y < 0.5);
+  
+  if (half_pitch) {
+    gridcopy(ceil(num_x), ceil(num_y)) intersection() {
+      pad_halfsize();
+      if (cut_far_x) {
+        translate([gridfinity_pitch*(-0.5+num_x), 0, 0]) pad_halfsize();
+      }
+      if (cut_far_y) {
+        translate([0, gridfinity_pitch*(-0.5+num_y), 0]) pad_halfsize();
+      }
+      if (cut_far_x && cut_far_y) {
+        // without this the far corner would be rectangular
+        translate([gridfinity_pitch*(-0.5+num_x), gridfinity_pitch*(-0.5+num_y), 0]) pad_halfsize();
+      }
+    }
+  }
+  else {
+    gridcopy(ceil(num_x), ceil(num_y)) intersection() {
+      pad_oversize();
+      if (cut_far_x) {
+        translate([gridfinity_pitch*(-1+num_x), 0, 0]) pad_oversize();
+      }
+      if (cut_far_y) {
+        translate([0, gridfinity_pitch*(-1+num_y), 0]) pad_oversize();
+      }
+      if (cut_far_x && cut_far_y) {
+        // without this the far corner would be rectangular
+        translate([gridfinity_pitch*(-1+num_x), gridfinity_pitch*(-1+num_y), 0]) pad_oversize();
+      }
+    }
+  }
+}
+
+
+module pad_halfsize() {
+  render()  // render here to keep tree from blowing up
+  for (xi=[0:1]) for (yi=[0:1]) translate([xi*gridfinity_pitch/2, yi*gridfinity_pitch/2, 0])
+  intersection() {
+    pad_oversize();
+    translate([-gridfinity_pitch/2, 0, 0]) pad_oversize();
+    translate([0, -gridfinity_pitch/2, 0]) pad_oversize();
+    translate([-gridfinity_pitch/2, -gridfinity_pitch/2, 0]) pad_oversize();
   }
 }
 

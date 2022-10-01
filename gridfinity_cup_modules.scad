@@ -23,6 +23,8 @@ default_wall_thickness = 0.95;
 default_hole_overhang_remedy = false;
 // Save material with thinner floor (only if no magnets, screws, or finger-slide used)
 default_efficient_floor = false;
+// Half-pitch base pads for offset stacking
+default_half_pitch = false;
 
 
 basic_cup(
@@ -37,7 +39,8 @@ basic_cup(
   floor_thickness=default_floor_thickness,
   wall_thickness=default_wall_thickness,
   hole_overhang_remedy=default_hole_overhang_remedy,
-  efficient_floor=default_efficient_floor
+  efficient_floor=default_efficient_floor,
+  half_pitch=default_half_pitch
 );
 
 
@@ -57,14 +60,15 @@ module basic_cup(
   floor_thickness=default_floor_thickness,
   wall_thickness=default_wall_thickness,
   hole_overhang_remedy=default_hole_overhang_remedy,
-  efficient_floor=default_efficient_floor
+  efficient_floor=default_efficient_floor,
+  half_pitch=default_half_pitch
   ) {
   num_separators = chambers-1;
   sep_pitch = num_x/(num_separators+1);
   separator_positions = num_separators < 1 ? [] : [ for (i=[1:num_separators]) i*sep_pitch ];
   
   difference() {
-    grid_block(num_x, num_y, num_z, magnet_diameter, screw_depth, hole_overhang_remedy=hole_overhang_remedy);
+    grid_block(num_x, num_y, num_z, magnet_diameter, screw_depth, hole_overhang_remedy=hole_overhang_remedy, half_pitch=half_pitch);
     color("red") partitioned_cavity(num_x, num_y, num_z, withLabel=withLabel,
     labelWidth=labelWidth, fingerslide=fingerslide, magnet_diameter=magnet_diameter, 
     screw_depth=screw_depth, floor_thickness=floor_thickness, wall_thickness=wall_thickness,
@@ -87,10 +91,11 @@ module irregular_cup(
   wall_thickness=default_wall_thickness,
   hole_overhang_remedy=default_hole_overhang_remedy,
   efficient_floor=default_efficient_floor,
+  half_pitch=default_half_pitch,
   separator_positions=[]
   ) {
   difference() {
-    grid_block(num_x, num_y, num_z, magnet_diameter, screw_depth, hole_overhang_remedy=hole_overhang_remedy);
+    grid_block(num_x, num_y, num_z, magnet_diameter, screw_depth, hole_overhang_remedy=hole_overhang_remedy, half_pitch=half_pitch);
     color("red") partitioned_cavity(num_x, num_y, num_z, withLabel=withLabel,
     labelWidth=labelWidth, fingerslide=fingerslide, magnet_diameter=magnet_diameter, 
     screw_depth=screw_depth, floor_thickness=floor_thickness, wall_thickness=wall_thickness,

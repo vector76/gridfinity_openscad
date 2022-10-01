@@ -31,6 +31,8 @@ wall_thickness = 0.95;  // .01
 efficient_floor = false;
 // When enabled, irregular subdivisions have to be defined in code
 irregular_subdivisions = false;
+// Enable to subdivide bottom pads to allow half-cell offsets
+half_pitch = false;
 
 module end_of_customizer_opts() {}
 
@@ -39,7 +41,8 @@ separator_positions = [ 0.25, 0.5, 1.4 ];
 
 if (filled_in) {
   grid_block(width, depth, height, magnet_diameter=magnet_diameter, 
-    screw_depth=screw_depth, hole_overhang_remedy=hole_overhang_remedy);
+    screw_depth=screw_depth, hole_overhang_remedy=hole_overhang_remedy,
+    half_pitch=half_pitch);
 }
 else if (irregular_subdivisions) {
   irregular_cup(
@@ -54,7 +57,8 @@ else if (irregular_subdivisions) {
     floor_thickness=floor_thickness,
     wall_thickness=wall_thickness,
     hole_overhang_remedy=hole_overhang_remedy,
-    separator_positions=separator_positions
+    separator_positions=separator_positions,
+    half_pitch=half_pitch
   );
 }
 else {
@@ -71,6 +75,7 @@ else {
     floor_thickness=floor_thickness,
     wall_thickness=wall_thickness,
     hole_overhang_remedy=hole_overhang_remedy,
-    efficient_floor=efficient_floor
+    efficient_floor=efficient_floor,
+    half_pitch=half_pitch
   );
 }
