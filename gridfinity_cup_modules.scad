@@ -162,17 +162,18 @@ module basic_cavity(num_x, num_y, num_z, fingerslide=default_fingerslide,
   m3_ht = screw_depth;
   part_ht = 5;  // height of partition between cells
   efloor = efficient_floor && magnet_diameter == 0 && screw_depth == 0 && !fingerslide;
+  seventeen = gridfinity_pitch/2-4;
   
   floorht = max(mag_ht, m3_ht, part_ht) + floor_thickness;
   
   difference() {
     union() {
       // cut downward from base
-      hull() cornercopy(17, num_x, num_y) {
+      hull() cornercopy(seventeen, num_x, num_y) {
         tz(zpoint-eps) cylinder(d=2.3, h=1.2+2*eps, $fn=24); // lip
       }
       
-      hull() cornercopy(17, num_x, num_y) {
+      hull() cornercopy(seventeen, num_x, num_y) {
         // create bevels below the lip
         tz(zpoint-0.1) cylinder(d=2.3, h=0.1, $fn=24);       // transition from lip ...
         tz(zpoint-q-q2) cylinder(d=2.3+2*q, h=q2, $fn=32);   // ... to top of thin wall ...
@@ -183,23 +184,23 @@ module basic_cavity(num_x, num_y, num_z, fingerslide=default_fingerslide,
     }
     
     // cut away from the negative to leave behind wall to make it easier to remove piece
-    pivot_z = 13.6-0.45+floorht-5;
-    pivot_y = -12+2;
+    pivot_z = 13.6-0.45+floorht-5+seventeen-17;
+    pivot_y = -10;
     
     // rounded inside bottom
     if(fingerslide){
       for (ai=[0:facets-1]) translate([0, pivot_y, pivot_z])
         rotate([90*ai/(facets-1), 0, 0])
         translate([0, -pivot_y, -pivot_z])
-        translate([-gridfinity_pitch/2, -10-17-1.15, 0]) 
+        translate([-gridfinity_pitch/2, -10-seventeen-1.15, 0]) 
         cube([gridfinity_pitch*num_x, 10, gridfinity_zpitch*num_z+5]);
     }
   }
   
   // cut away side lips if num_x is less than 1
   if (num_x < 1) {
-    hull() for (x=[-21+1.5+0.25+wall_thickness, -21+num_x*42-1.5-0.25-wall_thickness])
-    for (y=[-10, (num_y-0.5)*42-17])
+    hull() for (x=[-gridfinity_pitch/2+1.5+0.25+wall_thickness, -gridfinity_pitch/2+num_x*gridfinity_pitch-1.5-0.25-wall_thickness])
+    for (y=[-10, (num_y-0.5)*gridfinity_pitch-seventeen])
     translate([x, y, (floorht+7*num_z)/2])
     cylinder(d=3, h=7*num_z, $fn=24);
   }
@@ -208,31 +209,31 @@ module basic_cavity(num_x, num_y, num_z, fingerslide=default_fingerslide,
     if (num_x < 1) {
       gridcopy(1, num_y) {
         tz(floor_thickness) intersection() {
-          hull() cornercopy(17.5-1) cylinder(r=1, h=5, $fn=32);
-          translate([gridfinity_pitch*(-1+num_x), 0, 0]) hull() cornercopy(17.5-1) cylinder(r=1, h=5, $fn=32);
+          hull() cornercopy(seventeen-0.5) cylinder(r=1, h=5, $fn=32);
+          translate([gridfinity_pitch*(-1+num_x), 0, 0]) hull() cornercopy(seventeen-0.5) cylinder(r=1, h=5, $fn=32);
         }
       
         // tapered top portion
         intersection() {
           hull() {
-            tz(3) cornercopy(17.5-1) cylinder(r=1, h=1, $fn=32);
-            tz(5) cornercopy(19.5-1.15-q) cylinder(r=1.15+q, h=4, $fn=32);
+            tz(3) cornercopy(seventeen-0.5) cylinder(r=1, h=1, $fn=32);
+            tz(5) cornercopy(seventeen+2.5-1.15-q) cylinder(r=1.15+q, h=4, $fn=32);
           }
           translate([gridfinity_pitch*(-1+num_x), 0, 0]) hull() {
-            tz(3) cornercopy(17.5-1) cylinder(r=1, h=1, $fn=32);
-            tz(5) cornercopy(19.5-1.15-q) cylinder(r=1.15+q, h=4, $fn=32);
+            tz(3) cornercopy(seventeen-0.5) cylinder(r=1, h=1, $fn=32);
+            tz(5) cornercopy(seventeen+2.5-1.15-q) cylinder(r=1.15+q, h=4, $fn=32);
           }
         }
       }
     }
     else {
       // establishes floor
-      gridcopy(num_x, num_y) hull() tz(floor_thickness) cornercopy(17.5-1) cylinder(r=1, h=5, $fn=32);
+      gridcopy(num_x, num_y) hull() tz(floor_thickness) cornercopy(seventeen-0.5) cylinder(r=1, h=5, $fn=32);
       
       // tapered top portion
       gridcopy(num_x, num_y) hull() {
-        tz(3) cornercopy(17.5-1) cylinder(r=1, h=1, $fn=32);
-        tz(5) cornercopy(19.5-1.15-q) cylinder(r=1.15+q, h=4, $fn=32);
+        tz(3) cornercopy(seventeen-0.5) cylinder(r=1, h=1, $fn=32);
+        tz(5) cornercopy(seventeen+2.5-1.15-q) cylinder(r=1.15+q, h=4, $fn=32);
       }
     }
   }

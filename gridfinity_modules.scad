@@ -9,7 +9,7 @@ module grid_block(num_x=1, num_y=1, num_z=2, magnet_diameter=6.5, screw_depth=6,
   outer_size = gridfinity_pitch - gridfinity_clearance;  // typically 41.5
   block_corner_position = outer_size/2 - corner_radius;  // need not match center of pad corners
   magnet_thickness = 2.4;
-  magnet_position = magnet_diameter > 8 ? 17 - magnet_diameter / 2 : 13;
+  magnet_position = min(gridfinity_pitch/2-8, gridfinity_pitch/2-4-magnet_diameter/2);
   screw_hole_diam = 3;
   gp = gridfinity_pitch;
   
@@ -120,7 +120,7 @@ module pad_halfsize() {
 // unit pad slightly oversize at the top to be trimmed or joined with other feet or the rest of the model
 // also useful as cutouts for stacking
 module pad_oversize(num_x=1, num_y=1, margins=0) {
-  pad_corner_position = 17; // must be 17 to be compatible
+  pad_corner_position = gridfinity_pitch/2 - 4; // must be 17 to be compatible
   bevel1_top = 0.8;     // z of top of bottom-most bevel (bottom of bevel is at z=0)
   bevel2_bottom = 2.6;  // z of bottom of second bevel
   bevel2_top = 5;       // z of top of second bevel
