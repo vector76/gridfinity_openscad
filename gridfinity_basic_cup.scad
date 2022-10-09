@@ -18,7 +18,7 @@ filled_in = false;
 // X dimension subdivisions
 chambers = 1;
 // Include overhang for labeling
-withLabel = false;
+withLabel = "left"; // ["disabled", "left", "right", "center"]
 // Include larger corner fillet
 fingerslide = true;
 // Width of the label in number of units: positive numbers are measured from the 0 end, negative numbers are measured from the far end, value of zero means full width (as long as withLabel is true)

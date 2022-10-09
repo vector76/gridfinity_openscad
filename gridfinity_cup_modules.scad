@@ -2,8 +2,9 @@ include <gridfinity_modules.scad>
 
 // X dimension subdivisions
 default_chambers = 1;
+
 // Include overhang for labeling
-default_withLabel = "left"; // ["disabled", "left", "right", "center"]
+default_withLabel = "left"; //[disabled: no label, left: left aligned label, right: right aligned label, center: center aligned label]
 // Width of the label in number of units
 default_labelWidth = 0; // 0.1
 // Include larger corner fillet
