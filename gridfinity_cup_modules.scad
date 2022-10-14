@@ -2,12 +2,11 @@ include <gridfinity_modules.scad>
 
 // X dimension subdivisions
 default_chambers = 1;
+
 // Include overhang for labeling
-default_withLabel = false;
-// Width of the label in number of units
-// positive numbers are measured from the 0 end
-// negative numbers are measured from the far end
-default_labelWidth = "full";
+default_withLabel = "disabled"; //[disabled: no label, left: left aligned label, right: right aligned label, center: center aligned label]
+// Width of the label in number of units, or zero for full width
+default_labelWidth = 0; // 0.1
 // Include larger corner fillet
 default_fingerslide = true;
 // Set magnet diameter and depth to 0 to print without magnet holes
@@ -135,12 +134,20 @@ module partitioned_cavity(num_x, num_y, num_z, withLabel=default_withLabel,
       }
     }
     // this is the label
-    if (withLabel) {
-      label_num_x = (labelWidth == "full" || labelWidth == 0) ? num_x : labelWidth;
-      label_pos_x = label_num_x >= 0 ? 0 : num_x + label_num_x;
+    if (withLabel != "disabled") {
+      label_num_x = labelWidth <= 0 ? num_x : labelWidth;
+      label_pos_x = withLabel == "center" ? (num_x - label_num_x) / 2 
+                    : withLabel == "right" ? num_x - label_num_x 
+                    : 0 ;
+
       hull() for (i=[0,1, 2])
       translate([(-gridfinity_pitch/2) + (label_pos_x * gridfinity_pitch), yz[i][0], yz[i][1]])
-      rotate([0, 90, 0]) cylinder(d=bar_d, h=abs(label_num_x)*gridfinity_pitch, $fn=24);
+      rotate([0, 90, 0])
+      union(){
+          tz(abs(label_num_x)*gridfinity_pitch)
+          sphere(d=bar_d, $fn=24);
+          sphere(d=bar_d, $fn=24);
+      }
     }
   }
 }
