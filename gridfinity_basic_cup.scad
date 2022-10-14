@@ -17,11 +17,11 @@ hole_overhang_remedy = true;
 filled_in = false;
 // X dimension subdivisions
 chambers = 1;
-// Include overhang for labeling
-withLabel = "left"; // ["disabled", "left", "right", "center"]
+// Include overhang for labeling (and specify left/right/center justification)
+withLabel = "disabled"; // ["disabled", "left", "right", "center"]
 // Include larger corner fillet
 fingerslide = true;
-// Width of the label in number of units: positive numbers are measured from the 0 end, negative numbers are measured from the far end, value of zero means full width (as long as withLabel is true)
+// Width of the label in number of units, or zero means full width
 labelWidth = 0;  // .1
 // Minimum thickness above cutouts in base (Zack's design is effectively 1.2)
 floor_thickness = 0.7;

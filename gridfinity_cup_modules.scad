@@ -4,8 +4,8 @@ include <gridfinity_modules.scad>
 default_chambers = 1;
 
 // Include overhang for labeling
-default_withLabel = "left"; //[disabled: no label, left: left aligned label, right: right aligned label, center: center aligned label]
-// Width of the label in number of units
+default_withLabel = "disabled"; //[disabled: no label, left: left aligned label, right: right aligned label, center: center aligned label]
+// Width of the label in number of units, or zero for full width
 default_labelWidth = 0; // 0.1
 // Include larger corner fillet
 default_fingerslide = true;
@@ -135,7 +135,7 @@ module partitioned_cavity(num_x, num_y, num_z, withLabel=default_withLabel,
     }
     // this is the label
     if (withLabel != "disabled") {
-      label_num_x = labelWidth == 0 ? num_x : labelWidth;
+      label_num_x = labelWidth <= 0 ? num_x : labelWidth;
       label_pos_x = withLabel == "center" ? (num_x - label_num_x) / 2 
                     : withLabel == "right" ? num_x - label_num_x 
                     : 0 ;
