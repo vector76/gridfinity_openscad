@@ -18,11 +18,11 @@ filled_in = false;
 // X dimension subdivisions
 chambers = 1;
 // Include overhang for labeling (and specify left/right/center justification)
-withLabel = "disabled"; // ["disabled", "left", "right", "center"]
+withLabel = "disabled"; // ["disabled", "left", "right", "center", "leftchamber", "rightchamber", "centerchamber"]
 // Include larger corner fillet
 fingerslide = true;
 // Width of the label in number of units, or zero means full width
-labelWidth = 0;  // .1
+labelWidth = 0;  // .01
 // Minimum thickness above cutouts in base (Zack's design is effectively 1.2)
 floor_thickness = 0.7;
 // Wall thickness (Zack's design is 0.95)

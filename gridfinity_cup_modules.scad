@@ -4,9 +4,9 @@ include <gridfinity_modules.scad>
 default_chambers = 1;
 
 // Include overhang for labeling
-default_withLabel = "disabled"; //[disabled: no label, left: left aligned label, right: right aligned label, center: center aligned label]
+default_withLabel = "disabled"; //[disabled: no label, left: left aligned label, right: right aligned label, center: center aligned label, leftchamber: left aligned chamber label, rightchamber: right aligned chamber label, centerchamber: center aligned chamber label]
 // Width of the label in number of units, or zero for full width
-default_labelWidth = 0; // 0.1
+default_labelWidth = 0; // 0.01
 // Include larger corner fillet
 default_fingerslide = true;
 // Set magnet diameter and depth to 0 to print without magnet holes
@@ -133,20 +133,34 @@ module partitioned_cavity(num_x, num_y, num_z, withLabel=default_withLabel,
         translate([gp*(-0.5+separator_positions[i])-inner_wall_th/2, -gp/2, 0]) cube([inner_wall_th, gp*num_y, gridfinity_zpitch*(num_z+1)]);
       }
     }
+    
     // this is the label
     if (withLabel != "disabled") {
-      label_num_x = labelWidth <= 0 ? num_x : labelWidth;
-      label_pos_x = withLabel == "center" ? (num_x - label_num_x) / 2 
-                    : withLabel == "right" ? num_x - label_num_x 
-                    : 0 ;
+      // calcualte list of chambers. 
+      chamberWidths = len(separator_positions) < 1 || 
+        labelWidth == 0 ||
+        withLabel == "left" ||
+        withLabel == "center" ||
+        withLabel == "right" ?
+        [ num_x ] // single chamber equal to the bin length
+        : [ for (i=[0:len(separator_positions)]) (i==len(separator_positions) ? num_x : separator_positions[i]) - (i==0 ? 0 : separator_positions[i-1]) ];
+        
+      for (i=[0:len(chamberWidths)-1]) {
+        chamberStart = i == 0 ? 0 : separator_positions[i-1];
+        chamberWidth = chamberWidths[i];
+        label_num_x = (labelWidth == 0 || labelWidth > chamberWidth) ? chamberWidth : labelWidth;
+        label_pos_x = (withLabel == "center" || withLabel == "centerchamber" )? (chamberWidth - label_num_x) / 2 
+                        : (withLabel == "right" || withLabel == "rightchamber" )? chamberWidth - label_num_x 
+                        : 0 ;
 
-      hull() for (i=[0,1, 2])
-      translate([(-gridfinity_pitch/2) + (label_pos_x * gridfinity_pitch), yz[i][0], yz[i][1]])
-      rotate([0, 90, 0])
-      union(){
-          tz(abs(label_num_x)*gridfinity_pitch)
-          sphere(d=bar_d, $fn=24);
-          sphere(d=bar_d, $fn=24);
+        hull() for (i=[0,1, 2])
+        translate([(-gridfinity_pitch/2) + ((chamberStart + label_pos_x) * gridfinity_pitch), yz[i][0], yz[i][1]])
+        rotate([0, 90, 0])
+        union(){
+            tz(abs(label_num_x)*gridfinity_pitch)
+            sphere(d=bar_d, $fn=24);
+            sphere(d=bar_d, $fn=24);
+        }
       }
     }
   }
