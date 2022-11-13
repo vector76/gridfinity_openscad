@@ -33,6 +33,8 @@ efficient_floor = false;
 irregular_subdivisions = false;
 // Enable to subdivide bottom pads to allow half-cell offsets
 half_pitch = false;
+// Remove lower lip (stacking box supported on upper beveled edge only)
+remove_lip = false;
 
 module end_of_customizer_opts() {}
 
@@ -58,7 +60,8 @@ else if (irregular_subdivisions) {
     wall_thickness=wall_thickness,
     hole_overhang_remedy=hole_overhang_remedy,
     separator_positions=separator_positions,
-    half_pitch=half_pitch
+    half_pitch=half_pitch,
+    remove_lip=remove_lip
   );
 }
 else {
@@ -76,6 +79,7 @@ else {
     wall_thickness=wall_thickness,
     hole_overhang_remedy=hole_overhang_remedy,
     efficient_floor=efficient_floor,
-    half_pitch=half_pitch
+    half_pitch=half_pitch,
+    remove_lip=remove_lip
   );
 }

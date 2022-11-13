@@ -24,7 +24,8 @@ default_hole_overhang_remedy = false;
 default_efficient_floor = false;
 // Half-pitch base pads for offset stacking
 default_half_pitch = false;
-
+// Might want to remove inner lip of cup
+default_remove_lip = false;
 
 basic_cup(
   num_x=2,
@@ -39,7 +40,8 @@ basic_cup(
   wall_thickness=default_wall_thickness,
   hole_overhang_remedy=default_hole_overhang_remedy,
   efficient_floor=default_efficient_floor,
-  half_pitch=default_half_pitch
+  half_pitch=default_half_pitch,
+  remove_lip=default_remove_lip
 );
 
 
@@ -60,7 +62,8 @@ module basic_cup(
   wall_thickness=default_wall_thickness,
   hole_overhang_remedy=default_hole_overhang_remedy,
   efficient_floor=default_efficient_floor,
-  half_pitch=default_half_pitch
+  half_pitch=default_half_pitch,
+  remove_lip=default_remove_lip  
   ) {
   num_separators = chambers-1;
   sep_pitch = num_x/(num_separators+1);
@@ -71,7 +74,7 @@ module basic_cup(
     color("red") partitioned_cavity(num_x, num_y, num_z, withLabel=withLabel,
     labelWidth=labelWidth, fingerslide=fingerslide, magnet_diameter=magnet_diameter, 
     screw_depth=screw_depth, floor_thickness=floor_thickness, wall_thickness=wall_thickness,
-    efficient_floor=efficient_floor, separator_positions=separator_positions);
+    efficient_floor=efficient_floor, separator_positions=separator_positions, remove_lip=remove_lip);
   }
 }
 
@@ -91,14 +94,15 @@ module irregular_cup(
   hole_overhang_remedy=default_hole_overhang_remedy,
   efficient_floor=default_efficient_floor,
   half_pitch=default_half_pitch,
-  separator_positions=[]
+  separator_positions=[],
+  remove_lip=default_remove_lip
   ) {
   difference() {
     grid_block(num_x, num_y, num_z, magnet_diameter, screw_depth, hole_overhang_remedy=hole_overhang_remedy, half_pitch=half_pitch);
     color("red") partitioned_cavity(num_x, num_y, num_z, withLabel=withLabel,
     labelWidth=labelWidth, fingerslide=fingerslide, magnet_diameter=magnet_diameter, 
     screw_depth=screw_depth, floor_thickness=floor_thickness, wall_thickness=wall_thickness,
-    efficient_floor=efficient_floor, separator_positions=separator_positions);
+    efficient_floor=efficient_floor, separator_positions=separator_positions, remove_lip=remove_lip);
   }
 }
 
@@ -107,7 +111,7 @@ module partitioned_cavity(num_x, num_y, num_z, withLabel=default_withLabel,
     labelWidth=default_labelWidth, fingerslide=default_fingerslide, 
     magnet_diameter=default_magnet_diameter, screw_depth=default_screw_depth, 
     floor_thickness=default_floor_thickness, wall_thickness=default_wall_thickness,
-    efficient_floor=default_efficient_floor, separator_positions=[]) {
+    efficient_floor=default_efficient_floor, separator_positions=[], remove_lip=default_remove_lip) {
   // cavity with removed segments so that we leave dividing walls behind
   gp = gridfinity_pitch;
   outer_wall_th = 1.8;  // cavity is this far away from the 42mm 'ideal' block
@@ -126,7 +130,7 @@ module partitioned_cavity(num_x, num_y, num_z, withLabel=default_withLabel,
   difference() {
     basic_cavity(num_x, num_y, num_z, fingerslide=fingerslide, magnet_diameter=magnet_diameter,
     screw_depth=screw_depth, floor_thickness=floor_thickness, wall_thickness=wall_thickness,
-    efficient_floor=efficient_floor);
+    efficient_floor=efficient_floor, remove_lip=remove_lip);
     
     if (len(separator_positions) > 0) {
       for (i=[0:len(separator_positions)-1]) {
@@ -170,7 +174,7 @@ module partitioned_cavity(num_x, num_y, num_z, withLabel=default_withLabel,
 module basic_cavity(num_x, num_y, num_z, fingerslide=default_fingerslide, 
     magnet_diameter=default_magnet_diameter, screw_depth=default_screw_depth, 
     floor_thickness=default_floor_thickness, wall_thickness=default_wall_thickness,
-    efficient_floor=default_efficient_floor) {
+    efficient_floor=default_efficient_floor, remove_lip=default_remove_lip) {
   eps = 0.1;
   // I couldn't think of a good name for this ('q') but effectively it's the
   // size of the overhang that produces a wall thickness that's less than the lip
@@ -196,7 +200,12 @@ module basic_cavity(num_x, num_y, num_z, fingerslide=default_fingerslide,
       
       hull() cornercopy(seventeen, num_x, num_y) {
         // create bevels below the lip
-        tz(zpoint-0.1) cylinder(d=2.3, h=0.1, $fn=24);       // transition from lip ...
+        if (remove_lip) {
+          tz(zpoint) cylinder(d=3.7, h=1.9, $fn=32);       // transition from lip (where top of lip would be) ...
+        }
+        else {
+          tz(zpoint-0.1) cylinder(d=2.3, h=0.1, $fn=24);       // transition from lip ...
+        }
         tz(zpoint-q-q2) cylinder(d=2.3+2*q, h=q2, $fn=32);   // ... to top of thin wall ...
         // create rounded bottom of bowl (8.5 is high enough to not expose gaps)
         tz(2.3/2+q+floorht) sphere(d=2.3+2*q, $fn=32);       // .. to bottom of thin wall and floor
@@ -210,7 +219,7 @@ module basic_cavity(num_x, num_y, num_z, fingerslide=default_fingerslide,
     
     // rounded inside bottom
     if(fingerslide){
-      for (ai=[0:facets-1]) translate([0, pivot_y, pivot_z])
+      for (ai=[0:facets-1]) translate([0, pivot_y-(remove_lip ? 0.7 : 0), pivot_z])
         rotate([90*ai/(facets-1), 0, 0])
         translate([0, -pivot_y, -pivot_z])
         translate([-gridfinity_pitch/2, -10-seventeen-1.15, 0]) 

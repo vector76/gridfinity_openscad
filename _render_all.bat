@@ -16,6 +16,9 @@
 %OPENSCAD% gridfinity_basic_cup.scad -D width=0.5 -D depth=2 -D height=4 -D fingerslide=true -D withLabel=true -o Renders/basic_cup_halfx2x4.stl --export-format binstl
 %PYTHON% canonicalize.py Renders/basic_cup_halfx2x4.stl
 
+%OPENSCAD% gridfinity_basic_cup.scad -D width=1 -D depth=1 -D height=4 -D remove_lip=true -D fingerslide=true -o Renders/basic_cup_1x1x3_nolip.stl --export-format binstl
+%PYTHON% canonicalize.py Renders/basic_cup_1x1x3_nolip.stl
+
 %OPENSCAD% gridfinity_baseplate.scad -o Renders/baseplate.stl --export-format binstl
 %PYTHON% canonicalize.py Renders/baseplate.stl
 
