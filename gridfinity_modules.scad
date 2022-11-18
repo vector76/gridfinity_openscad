@@ -4,7 +4,7 @@ gridfinity_clearance = 0.5;  // each bin is undersize by this much
 
 // basic block with cutout in top to be stackable, optional holes in bottom
 // start with this and begin 'carving'
-module grid_block(num_x=1, num_y=1, num_z=2, magnet_diameter=6.5, screw_depth=6, center=false, hole_overhang_remedy=false, half_pitch=false) {
+module grid_block(num_x=1, num_y=1, num_z=2, magnet_diameter=6.5, screw_depth=6, center=false, hole_overhang_remedy=false, half_pitch=false, box_corner_attachments_only = false) {
   corner_radius = 3.75;
   outer_size = gridfinity_pitch - gridfinity_clearance;  // typically 41.5
   block_corner_position = outer_size/2 - corner_radius;  // need not match center of pad corners
@@ -46,17 +46,17 @@ module grid_block(num_x=1, num_y=1, num_z=2, magnet_diameter=6.5, screw_depth=6,
       pad_oversize(num_x, num_y, 1);
     
     if (esd > 0) {  // add pockets for screws if requested
-      gridcopy(ceil(num_x), ceil(num_y)) cornercopy(magnet_position)
+      gridcopycorners(ceil(num_x), ceil(num_y), magnet_position, box_corner_attachments_only)
       translate([0, 0, -0.1]) cylinder(d=screw_hole_diam, h=esd+0.1, $fn=28);
     }
     
     if (emd > 0) {  // add pockets for magnets if requested
-      gridcopy(ceil(num_x), ceil(num_y)) cornercopy(magnet_position)
+      gridcopycorners(ceil(num_x), ceil(num_y), magnet_position, box_corner_attachments_only)
       translate([0, 0, -0.1]) cylinder(d=emd, h=magnet_thickness+0.1, $fn=41);
     }
     
     if (overhang_fix) {  // people seem to really like this overhang fix
-      gridcopy(ceil(num_x), ceil(num_y)) cornercopy(magnet_position)
+      gridcopycorners(ceil(num_x), ceil(num_y), magnet_position, box_corner_attachments_only)
       translate([0, 0, magnet_thickness-0.1]) 
       render() intersection() {  // for some reason OpenSCAD blows up if I don't render here
         translate([-emd/2, -screw_hole_diam/2, 0]) cube([emd, screw_hole_diam, overhang_fix_depth+0.1]);
@@ -152,6 +152,18 @@ module pad_oversize(num_x=1, num_y=1, margins=0) {
   }
 }
 
+// similar to cornercopy, can only copy to box corners
+module gridcopycorners(num_x, num_y, r, onlyBoxCorners = false) {
+  for (xi=[1:num_x]) for (yi=[1:num_y]) 
+    for (xx=[-1, 1]) for (yy=[-1, 1]) 
+      if(!onlyBoxCorners || 
+        (xi == 1 && yi == 1 && xx == -1 && yy == -1) ||
+        (xi == num_x && yi == num_y && xx == 1 && yy == 1) ||
+        (xi == 1 && yi == num_y && xx == -1 && yy == 1) ||
+        (xi == num_x && yi == 1 && xx == 1 && yy == -1))  
+        translate([gridfinity_pitch*(xi-1), gridfinity_pitch*(yi-1), 0]) 
+        translate([xx*r, yy*r, 0]) children();
+}
 
 // similar to quadtranslate but expands to extremities of a block
 module cornercopy(r, num_x=1, num_y=1) {

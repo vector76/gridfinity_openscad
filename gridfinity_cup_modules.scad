@@ -26,7 +26,8 @@ default_efficient_floor = false;
 default_half_pitch = false;
 // Might want to remove inner lip of cup
 default_lip_style = "normal";
-
+// Limit attachments (magnets and scres) to box corners for faster printing.
+box_corner_attachments_only = false;
 basic_cup(
   num_x=2,
   num_y=1,
@@ -41,7 +42,8 @@ basic_cup(
   hole_overhang_remedy=default_hole_overhang_remedy,
   efficient_floor=default_efficient_floor,
   half_pitch=default_half_pitch,
-  lip_style=default_lip_style
+  lip_style=default_lip_style,
+  box_corner_attachments_only=box_corner_attachments_only
 );
 
 
@@ -63,14 +65,15 @@ module basic_cup(
   hole_overhang_remedy=default_hole_overhang_remedy,
   efficient_floor=default_efficient_floor,
   half_pitch=default_half_pitch,
-  lip_style=default_lip_style  
+  lip_style=default_lip_style,
+  box_corner_attachments_only=box_corner_attachments_only
   ) {
   num_separators = chambers-1;
   sep_pitch = num_x/(num_separators+1);
   separator_positions = num_separators < 1 ? [] : [ for (i=[1:num_separators]) i*sep_pitch ];
   
   difference() {
-    grid_block(num_x, num_y, num_z, magnet_diameter, screw_depth, hole_overhang_remedy=hole_overhang_remedy, half_pitch=half_pitch);
+    grid_block(num_x, num_y, num_z, magnet_diameter, screw_depth, hole_overhang_remedy=hole_overhang_remedy, half_pitch=half_pitch, box_corner_attachments_only=box_corner_attachments_only);
     color("red") partitioned_cavity(num_x, num_y, num_z, withLabel=withLabel,
     labelWidth=labelWidth, fingerslide=fingerslide, magnet_diameter=magnet_diameter, 
     screw_depth=screw_depth, floor_thickness=floor_thickness, wall_thickness=wall_thickness,
@@ -98,7 +101,7 @@ module irregular_cup(
   lip_style=default_lip_style
   ) {
   difference() {
-    grid_block(num_x, num_y, num_z, magnet_diameter, screw_depth, hole_overhang_remedy=hole_overhang_remedy, half_pitch=half_pitch);
+    grid_block(num_x, num_y, num_z, magnet_diameter, screw_depth, hole_overhang_remedy=hole_overhang_remedy, half_pitch=half_pitch, box_corner_attachments_only=box_corner_attachments_only);
     color("red") partitioned_cavity(num_x, num_y, num_z, withLabel=withLabel,
     labelWidth=labelWidth, fingerslide=fingerslide, magnet_diameter=magnet_diameter, 
     screw_depth=screw_depth, floor_thickness=floor_thickness, wall_thickness=wall_thickness,

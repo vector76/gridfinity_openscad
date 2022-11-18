@@ -6,13 +6,15 @@ width = 2; // [ 0.5, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 ]
 // Y dimension in grid units
 depth = 1; // [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 ]
 // Z dimension (multiples of 7mm)
-height = 3;// [2, 3, 4, 5, 6, 7]
+height = 3;
 // (Zack's design uses magnet diameter of 6.5)
 magnet_diameter = 0;  // .1
 // (Zack's design uses depth of 6)
 screw_depth = 0;
 // Hole overhang remedy is active only when both screws and magnets are nonzero (and this option is selected)
 hole_overhang_remedy = true;
+//Only add attachments (magnets and screw) to box corners (prints faster).
+box_corner_attachments_only = false;
 // Fill in solid block (overrides all following options)
 filled_in = false;
 // X dimension subdivisions
@@ -44,7 +46,7 @@ separator_positions = [ 0.25, 0.5, 1.4 ];
 if (filled_in) {
   grid_block(width, depth, height, magnet_diameter=magnet_diameter, 
     screw_depth=screw_depth, hole_overhang_remedy=hole_overhang_remedy,
-    half_pitch=half_pitch);
+    half_pitch=half_pitch, box_corner_attachments_only=box_corner_attachments_only);
 }
 else if (irregular_subdivisions) {
   irregular_cup(
@@ -61,7 +63,8 @@ else if (irregular_subdivisions) {
     hole_overhang_remedy=hole_overhang_remedy,
     separator_positions=separator_positions,
     half_pitch=half_pitch,
-    lip_style=lip_style
+    lip_style=lip_style,
+    box_corner_attachments_only=box_corner_attachments_only
   );
 }
 else {
@@ -80,6 +83,7 @@ else {
     hole_overhang_remedy=hole_overhang_remedy,
     efficient_floor=efficient_floor,
     half_pitch=half_pitch,
-    lip_style=lip_style
+    lip_style=lip_style,
+    box_corner_attachments_only=box_corner_attachments_only
   );
 }
