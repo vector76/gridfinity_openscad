@@ -4,7 +4,7 @@ gridfinity_clearance = 0.5;  // each bin is undersize by this much
 
 // set this to produce sharp corners on baseplates and bins
 // not for general use (breaks compatibility) but may be useful for special cases
-sharp_corners = 1;  
+sharp_corners = 0;
 
 
 // basic block with cutout in top to be stackable, optional holes in bottom
