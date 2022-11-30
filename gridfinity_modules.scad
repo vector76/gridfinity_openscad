@@ -2,6 +2,11 @@ gridfinity_pitch = 42;
 gridfinity_zpitch = 7;
 gridfinity_clearance = 0.5;  // each bin is undersize by this much
 
+// set this to produce sharp corners on baseplates and bins
+// not for general use (breaks compatibility) but may be useful for special cases
+sharp_corners = 1;  
+
+
 // basic block with cutout in top to be stackable, optional holes in bottom
 // start with this and begin 'carving'
 module grid_block(num_x=1, num_y=1, num_z=2, magnet_diameter=6.5, screw_depth=6, center=false, hole_overhang_remedy=false, half_pitch=false, box_corner_attachments_only = false) {
@@ -116,6 +121,17 @@ module pad_halfsize() {
   }
 }
 
+// like a cylinder but produces a square solid instead of a round one
+// specified 'diameter' is the side length of the square, not the diagonal diameter
+module cylsq(d, h) {
+  translate([-d/2, -d/2, 0]) cube([d, d, h]);
+}
+
+// like a tapered cylinder with two diameters, but square instead of round
+module cylsq2(d1, d2, h) {
+  linear_extrude(height=h, scale=d2/d1)
+  square([d1, d1], center=true);
+}
 
 // unit pad slightly oversize at the top to be trimmed or joined with other feet or the rest of the model
 // also useful as cutouts for stacking
@@ -134,13 +150,25 @@ module pad_oversize(num_x=1, num_y=1, margins=0) {
   difference() {
     union() {
       hull() cornercopy(pad_corner_position, num_x, num_y) {
-        cylinder(d=1.6+2*radialgap, h=0.1, $fn=24);
-        translate([0, 0, bevel1_top]) cylinder(d=3.2+2*radialgap, h=1.9, $fn=32);
+        if (sharp_corners) {
+          cylsq(d=1.6+2*radialgap, h=0.1);
+          translate([0, 0, bevel1_top]) cylsq(d=3.2+2*radialgap, h=1.9);
+        }
+        else {
+          cylinder(d=1.6+2*radialgap, h=0.1, $fn=24);
+          translate([0, 0, bevel1_top]) cylinder(d=3.2+2*radialgap, h=1.9, $fn=32);
+        }
       }
       
       hull() cornercopy(pad_corner_position, num_x, num_y) {
-        translate([0, 0, bevel2_bottom]) 
-        cylinder(d1=3.2+2*radialgap, d2=7.5+0.5+2*radialgap+2*bonus_ht, h=bevel2_top-bevel2_bottom+bonus_ht, $fn=32);
+        if (sharp_corners) {
+          translate([0, 0, bevel2_bottom]) 
+          cylsq2(d1=3.2+2*radialgap, d2=7.5+0.5+2*radialgap+2*bonus_ht, h=bevel2_top-bevel2_bottom+bonus_ht);
+        }
+        else {
+          translate([0, 0, bevel2_bottom]) 
+          cylinder(d1=3.2+2*radialgap, d2=7.5+0.5+2*radialgap+2*bonus_ht, h=bevel2_top-bevel2_bottom+bonus_ht, $fn=32);
+        }
       }
     }
     
