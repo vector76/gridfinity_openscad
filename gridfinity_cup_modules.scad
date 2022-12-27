@@ -183,36 +183,45 @@ module basic_cavity(num_x, num_y, num_z, fingerslide=default_fingerslide,
   // size of the overhang that produces a wall thickness that's less than the lip
   // arount the top inside edge.
   q = 1.65-wall_thickness+0.95;  // default 1.65 corresponds to wall thickness of 0.95
-  q2 = 2.15;
-  zpoint = gridfinity_zpitch*num_z-1.2;
+  q2 = 0.1;
+  inner_lip_ht = 1.2;
+  part_ht = 5;  // height of partition between cells
+  // the Z height of the bottom of the inside edge of the standard lip
+  zpoint = max(part_ht+floor_thickness, gridfinity_zpitch*num_z-inner_lip_ht);
   facets = 13;
   mag_ht = magnet_diameter > 0 ? 2.4: 0;
   m3_ht = screw_depth;
-  part_ht = 5;  // height of partition between cells
   efloor = efficient_floor && magnet_diameter == 0 && screw_depth == 0 && !fingerslide;
   seventeen = gridfinity_pitch/2-4;
   
   floorht = max(mag_ht, m3_ht, part_ht) + floor_thickness;
   
+  // replace "normal" with "reduced" if z-height is less than 1.8
+  lip_style2 = (num_z < 1.8 && lip_style == "normal") ? "reduced" : lip_style1;
+  // replace "reduced" with "none" if z-height is less than 1.1
+  lip_style3 = (num_z < 1.2 && lip_style2 == "reduced") ? "none" : lip_style2;
+  
   difference() {
     union() {
-      // cut downward from base
+      // cut out inside edge of standard lip
       hull() cornercopy(seventeen, num_x, num_y) {
-        tz(zpoint-eps) cylinder(d=2.3, h=1.2+2*eps, $fn=24); // lip
+        tz(zpoint-eps) cylinder(d=2.3, h=inner_lip_ht+2*eps, $fn=24); // lip
       }
       
       hull() cornercopy(seventeen, num_x, num_y) {
         // create bevels below the lip
-        if (lip_style == "reduced") {
-          tz(zpoint) cylinder(d=3.7, h=1.9, $fn=32);       // transition from lip (where top of lip would be) ...
+        if (lip_style3 == "reduced") {
+          tz(zpoint+1.8) cylinder(d=3.7, h=0.1, $fn=32); // transition from lip (where top of lip would be) ...
+          // radius increases by (2.3+2*q-3.7)/2 = q-1.4/2 = q-0.7
+          tz(zpoint-(q-0.7)+1.9-q2) cylinder(d=2.3+2*q, h=q2, $fn=32);   // ... to top of thin wall ...
         }
-        else if (lip_style == "none") {
+        else if (lip_style3 == "none") {
           tz(zpoint) cylinder(d=2.3+2*q, h=6, $fn=32);   // remove entire lip
         }
-        else {
+        else {  // normal
           tz(zpoint-0.1) cylinder(d=2.3, h=0.1, $fn=24);       // transition from lip ...
+          tz(zpoint-q-q2) cylinder(d=2.3+2*q, h=q2, $fn=32);   // ... to top of thin wall ...
         }
-        tz(zpoint-q-q2) cylinder(d=2.3+2*q, h=q2, $fn=32);   // ... to top of thin wall ...
         // create rounded bottom of bowl (8.5 is high enough to not expose gaps)
         tz(2.3/2+q+floorht) sphere(d=2.3+2*q, $fn=32);       // .. to bottom of thin wall and floor
         tz(2.3/2+q+floorht) mirror([0, 0, 1]) cylinder(d1=2.3+2*q, d2=0, h=1.15+q, $fn=32);
@@ -230,8 +239,8 @@ module basic_cavity(num_x, num_y, num_z, fingerslide=default_fingerslide,
         // reduced slide position is -seventeen-1.85 which is the edge of the upper lip
         // no lip means we need -gridfinity_pitch/2+1.5+0.25+wall_thickness ?
         translate([0, (
-          lip_style == "reduced" ? -0.7 
-          : (lip_style=="none" ? seventeen+1.15-gridfinity_pitch/2+0.25+wall_thickness
+          lip_style3 == "reduced" ? -0.7 
+          : (lip_style3=="none" ? seventeen+1.15-gridfinity_pitch/2+0.25+wall_thickness
           : 0
           ) ), 0])
         translate([0, pivot_y, pivot_z])
