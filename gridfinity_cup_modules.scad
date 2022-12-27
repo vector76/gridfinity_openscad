@@ -197,7 +197,7 @@ module basic_cavity(num_x, num_y, num_z, fingerslide=default_fingerslide,
   floorht = max(mag_ht, m3_ht, part_ht) + floor_thickness;
   
   // replace "normal" with "reduced" if z-height is less than 1.8
-  lip_style2 = (num_z < 1.8 && lip_style == "normal") ? "reduced" : lip_style1;
+  lip_style2 = (num_z < 1.8 && lip_style == "normal") ? "reduced" : lip_style;
   // replace "reduced" with "none" if z-height is less than 1.1
   lip_style3 = (num_z < 1.2 && lip_style2 == "reduced") ? "none" : lip_style2;
   
