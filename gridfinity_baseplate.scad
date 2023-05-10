@@ -25,7 +25,7 @@ module base_lid(num_x, num_y) {
   
   translate([0, 0, 7]) frame_plain(xsize, ysize, trim=0.25);
   difference() {
-    grid_block(xsize, ysize, 1, magnet_diameter=0, screw_depth=0);
+    grid_block(num_x, num_y, 1, magnet_diameter=0, screw_depth=0);
     gridcopy(num_x, num_y) {
       cornercopy(magnet_position) {
         translate([0, 0, 7-magnet_thickness])
