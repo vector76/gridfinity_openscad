@@ -3,14 +3,18 @@ include <gridfinity_modules.scad>
 
 xsize = 5;
 ysize = 3;
-weighted = false;
-lid = false;
 
-if (lid) {
+version = "plain"; // [plain, weighted, lid, woodscrew]
+
+
+if (version=="lid") {
   base_lid(xsize, ysize);
 }
-else if (weighted) {
+else if (version=="weighted") {
   weighted_baseplate(xsize, ysize);
+}
+else if (version=="woodscrew") {
+    woodscrew_baseplate(xsize, ysize);
 }
 else {
   frame_plain(xsize, ysize);
@@ -35,6 +39,34 @@ module base_lid(num_x, num_y) {
   }
 }
 
+
+
+module woodscrew_baseplate(num_x, num_y) {
+  magnet_od = 6.5;
+  magnet_position = min(gridfinity_pitch/2-8, gridfinity_pitch/2-4-magnet_od/2);
+  magnet_thickness = 2.4;
+  eps = 0.1;
+  
+  difference() {
+    frame_plain(num_x, num_y, 6.4);
+    
+    gridcopy(num_x, num_y) {
+      cornercopy(magnet_position) {
+        translate([0, 0, -magnet_thickness])
+        cylinder(d=magnet_od, h=magnet_thickness+eps, $fn=48);
+        
+        translate([0, 0, -6.4]) cylinder(d=3.5, h=6.4, $fn=24);
+        
+        // counter-sunk holes in the bottom
+        translate([0, 0, -6.41]) cylinder(d1=8.5, d2=3.5, h=2.5, $fn=24);
+      }
+      
+      //counter-sunk holes for woodscrews
+      translate([0, 0, -2.5]) cylinder(d1=3.5, d2=8.5, h=2.5, $fn=24);
+      translate([0, 0, -6.41]) cylinder(d=3.5, h=6.4, $fn=24);
+    }
+  }
+}
 
 module weighted_baseplate(num_x, num_y) {
   magnet_od = 6.5;
