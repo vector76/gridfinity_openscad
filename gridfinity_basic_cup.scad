@@ -2,9 +2,9 @@
 use <gridfinity_cup_modules.scad>
 
 // X dimension in grid units
-width = 2; // [ 0.5, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 ]
+width = 2.0
 // Y dimension in grid units
-depth = 1; // [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 ]
+depth = 1.0
 // Z dimension (multiples of 7mm)
 height = 3;
 // (Zack's design uses magnet diameter of 6.5)
