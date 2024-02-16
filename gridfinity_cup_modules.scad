@@ -7,6 +7,8 @@ default_chambers = 1;
 default_withLabel = "disabled"; //[disabled: no label, left: left aligned label, right: right aligned label, center: center aligned label, leftchamber: left aligned chamber label, rightchamber: right aligned chamber label, centerchamber: center aligned chamber label]
 // Width of the label in number of units, or zero for full width
 default_labelWidth = 0; // 0.01
+// Height of the label in mm
+default_labelHeight = 12;
 // Include larger corner fillet
 default_fingerslide = true;
 // Set magnet diameter and depth to 0 to print without magnet holes
@@ -35,6 +37,7 @@ basic_cup(
   chambers=default_chambers,
   withLabel=default_withLabel,
   labelWidth=default_labelWidth,
+  labelHeight=default_labelHeight,
   magnet_diameter=default_magnet_diameter,
   screw_depth=default_screw_depth,
   floor_thickness=default_floor_thickness,
@@ -57,6 +60,7 @@ module basic_cup(
   chambers=default_chambers,
   withLabel=default_withLabel,
   labelWidth=default_labelWidth,
+  labelHeight=default_labelHeight,
   fingerslide=default_fingerslide,
   magnet_diameter=default_magnet_diameter,
   screw_depth=default_screw_depth,
@@ -75,7 +79,8 @@ module basic_cup(
   difference() {
     grid_block(num_x, num_y, num_z, magnet_diameter, screw_depth, hole_overhang_remedy=hole_overhang_remedy, half_pitch=half_pitch, box_corner_attachments_only=box_corner_attachments_only);
     color("red") partitioned_cavity(num_x, num_y, num_z, withLabel=withLabel,
-    labelWidth=labelWidth, fingerslide=fingerslide, magnet_diameter=magnet_diameter, 
+    labelWidth=labelWidth,
+    labelHeight=labelHeight, fingerslide=fingerslide, magnet_diameter=magnet_diameter, 
     screw_depth=screw_depth, floor_thickness=floor_thickness, wall_thickness=wall_thickness,
     efficient_floor=efficient_floor, separator_positions=separator_positions, lip_style=lip_style);
   }
@@ -89,6 +94,7 @@ module irregular_cup(
   num_z,
   withLabel=default_withLabel,
   labelWidth=default_labelWidth,
+  labelHeight=default_labelHeight,
   fingerslide=default_fingerslide,
   magnet_diameter=default_magnet_diameter,
   screw_depth=default_screw_depth,
@@ -103,7 +109,8 @@ module irregular_cup(
   difference() {
     grid_block(num_x, num_y, num_z, magnet_diameter, screw_depth, hole_overhang_remedy=hole_overhang_remedy, half_pitch=half_pitch, box_corner_attachments_only=box_corner_attachments_only);
     color("red") partitioned_cavity(num_x, num_y, num_z, withLabel=withLabel,
-    labelWidth=labelWidth, fingerslide=fingerslide, magnet_diameter=magnet_diameter, 
+    labelWidth=labelWidth,
+    labelHeight=labelHeight, fingerslide=fingerslide, magnet_diameter=magnet_diameter, 
     screw_depth=screw_depth, floor_thickness=floor_thickness, wall_thickness=wall_thickness,
     efficient_floor=efficient_floor, separator_positions=separator_positions, lip_style=lip_style);
   }
@@ -111,7 +118,8 @@ module irregular_cup(
 
 
 module partitioned_cavity(num_x, num_y, num_z, withLabel=default_withLabel, 
-    labelWidth=default_labelWidth, fingerslide=default_fingerslide, 
+    labelWidth=default_labelWidth, 
+    labelHeight=default_labelHeight, fingerslide=default_fingerslide, 
     magnet_diameter=default_magnet_diameter, screw_depth=default_screw_depth, 
     floor_thickness=default_floor_thickness, wall_thickness=default_wall_thickness,
     efficient_floor=default_efficient_floor, separator_positions=[], lip_style=default_lip_style) {
@@ -123,7 +131,7 @@ module partitioned_cavity(num_x, num_y, num_z, withLabel=default_withLabel,
   bar_d = 1.2;
   zpoint = gridfinity_zpitch*num_z;
   
-  yz = [[ (num_y-0.5)*gridfinity_pitch-14, zpoint-bar_d/2 ],
+  yz = [[ (num_y-0.5)*gridfinity_pitch-labelHeight-2, zpoint-bar_d/2 ],
     [ (num_y-0.5)*gridfinity_pitch, zpoint-bar_d/2 ],
     [ (num_y-0.5)*gridfinity_pitch, zpoint-bar_d/2-10.18 ]
   ];
