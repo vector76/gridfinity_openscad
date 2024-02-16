@@ -25,6 +25,8 @@ withLabel = "disabled"; // ["disabled", "left", "right", "center", "leftchamber"
 fingerslide = true;
 // Width of the label in number of units, or zero means full width
 labelWidth = 0;  // .01
+// Height of the label in mm, default uses 12mm, common are 12, 9 and 6
+labelHeight = 12;
 // Minimum thickness above cutouts in base (Zack's design is effectively 1.2)
 floor_thickness = 0.7;
 // Wall thickness (Zack's design is 0.95)
@@ -55,6 +57,7 @@ else if (irregular_subdivisions) {
     num_z=height,
     withLabel=withLabel,
     labelWidth=labelWidth,
+    labelHeight=labelHeight,
     fingerslide=fingerslide,
     magnet_diameter=magnet_diameter,
     screw_depth=screw_depth,
@@ -75,6 +78,7 @@ else {
     chambers=chambers,
     withLabel=withLabel,
     labelWidth=labelWidth,
+    labelHeight=labelHeight,
     fingerslide=fingerslide,
     magnet_diameter=magnet_diameter,
     screw_depth=screw_depth,
